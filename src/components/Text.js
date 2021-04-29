@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { writeReport } from '../data';
 import Item from './Item'
 
-function Text({landLord, crop, year, setSeedList, seedList, setChemList, chemList, setFertList, fertList, setTruckingList, truckingList, setFuelList, fuelList, removeItem}) {
+function Text({total, landLord, crop, year, setSeedList, seedList, setChemList, chemList, setFertList, fertList, setTruckingList, truckingList, setFuelList, fuelList, removeItem}) {
     const saveReport = () => {
         //build report object
         let report = {
@@ -15,6 +15,7 @@ function Text({landLord, crop, year, setSeedList, seedList, setChemList, chemLis
           fertList,
           truckingList,
           fuelList,
+          total,
         }
         //send obj to firebase
         writeReport(report)
@@ -115,6 +116,14 @@ function Text({landLord, crop, year, setSeedList, seedList, setChemList, chemLis
                 }
             </Expense>
             {
+                total > 0 ?
+                <Total>
+                <h3>Total Billed</h3>
+                <p>${total}</p>
+                </Total>
+                : ''
+            }
+            {
                 landLord && year !== '' ?
                 <Buttons>
                     <button onClick={() => saveReport()}>Save</button>
@@ -132,7 +141,6 @@ const Container = styled.div`
         text-align: center;
         padding: 10px;
     }
-    
 `
 
 const Header = styled.div`
@@ -146,6 +154,12 @@ const Buttons = styled.div`
     @media print {
         display: none;
     }
+`
+const Total = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 80px;
 `
 
 export default Text;

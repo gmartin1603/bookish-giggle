@@ -1,18 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styled from 'styled-components'
-import { getReport, getReports } from '../data';
+import { getReport } from '../data';
 
-function ReportSelect({setChemList, setCrop, setFertList, setFuelList, setLandLord,setYear, setSeedList, setTruckingList}) {
-    const [reports, setReports] = useState([])
+function ReportSelect({reports, setChemList, setCrop, setFertList, setFuelList, setLandLord,setYear, setSeedList, setTruckingList, setTotal}) {
+    
 
     const handleChange = (value) => {
-        getReport(value, setChemList, setCrop, setFertList, setFuelList, setLandLord,setYear, setSeedList, setTruckingList)
+        getReport(value, setChemList, setCrop, setFertList, setFuelList, setLandLord,setYear, setSeedList, setTruckingList, setTotal)
         
     }
 
-    useEffect(() => {
-        getReports(setReports, reports)
-    }, [])
     return (
         <Container> 
             <select onChange={(e) => handleChange(e.target.value)} >

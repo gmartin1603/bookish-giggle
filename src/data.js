@@ -68,7 +68,7 @@ export const getReports = (func) => {
     })
 }
 
-export const getReport = (doc, setChemList, setCrop, setFertList, setFuelList, setLandLord,setYear, setSeedList, setTruckingList) => {
+export const getReport = (doc, setChemList, setCrop, setFertList, setFuelList, setLandLord,setYear, setSeedList, setTruckingList, setTotal) => {
     db.collection("reports").doc(doc).get()
     .then((snapshot) => {
         let obj = snapshot.data()
@@ -80,5 +80,6 @@ export const getReport = (doc, setChemList, setCrop, setFertList, setFuelList, s
         setFertList(obj.fertList)
         setChemList(obj.chemList)
         setFuelList(obj.fuelList)
+        setTotal(obj.total)
     })
 }

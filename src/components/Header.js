@@ -7,7 +7,8 @@ function Header(props) {
         <Container>
             <Nav>
                 <Link to="/">Create New Report</Link> |
-                <Link to="/View">View and Edit Reports</Link>
+                <Link to="/View">View and Edit Reports</Link> | 
+                <Link to="Add">Add New Option</Link>
             </Nav>
         </Container>
     );
@@ -31,7 +32,9 @@ const Nav = styled.nav`
         padding: 10px;
         text-decoration: none;
         color: black;
-
+    }
+    a:active {
+        color: red;
     }
 `
 
