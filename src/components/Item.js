@@ -12,7 +12,7 @@ function Item({obj, list, state, removeItem}) {
                 <p>{obj.qty} <b>{obj.unit}</b></p>
             }
             <p>@ ${obj.price} <b>per {obj.unit}</b></p>
-            <p><b>Total:</b> ${obj.price * obj.qty}</p>
+            <p><b>Total:</b> ${(obj.price * obj.qty).toFixed(2)}</p>
             <button onClick={() => removeItem(list, 'id', obj.id, state)}>Delete</button>
         </Container>
     );

@@ -2,12 +2,13 @@ import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import NewReport from "./components/NewReport";
 import Header from "./components/Header";
 import { useEffect, useState } from "react";
-import {getData, writeData, getReports} from './data'
+import {getData, writeData, getReports, auth} from './data'
 import Text from "./components/Text";
 import styled from 'styled-components'
 import ReportSelect from "./components/ReportSelect";
 import EditReport from "./components/EditReport";
 import AddOption from "./components/AddOption";
+import Login from "./components/Login";
 
 
 function App() {
@@ -39,6 +40,11 @@ function App() {
   const [label, setLabel] = useState('')
   const [total, setTotal] = useState(0)
   const [reports, setReports] = useState([])
+  const [user, setUser] = useState('')
+
+  auth.onAuthStateChanged((user) => {
+    user && setUser(user.email)
+  })
 
   useEffect(() => {
     getData('labels', setLabels)
@@ -267,8 +273,11 @@ function App() {
 
   return (
     <Router>
+        {
+          user? 
       <Container className="app">
-        <Header/>
+        
+        <Header setUser={setUser}/>
           <Switch>
             <Route path="/Add">
               <AddOption
@@ -357,6 +366,9 @@ function App() {
             </Route>
           </Switch>
       </Container>
+          :
+          <Login/>
+        }
     </Router>
   );
 }

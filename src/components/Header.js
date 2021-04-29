@@ -1,14 +1,21 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components'
+import { auth } from '../data';
 
 function Header(props) {
+    const signOut = () => {
+        auth.signOut()
+        props.setUser('')
+    }
+
     return (
         <Container>
             <Nav>
                 <Link to="/">Create New Report</Link> |
                 <Link to="/View">View and Edit Reports</Link> | 
-                <Link to="Add">Add New Option</Link>
+                <Link to="Add">Add New Option</Link> | 
+                <Link onClick={() => signOut()}>Logout</Link>
             </Nav>
         </Container>
     );

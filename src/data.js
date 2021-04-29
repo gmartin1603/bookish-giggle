@@ -13,6 +13,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig)
 
 export const db = firebase.firestore();
+export const auth = firebase.auth();
 
 export const getData = (coll, func) => {
     db.collection(coll).get()
@@ -53,6 +54,9 @@ export const writeData = (coll, exp, expenses) => {
 
 export const writeReport = (report) => {
     db.collection("reports").doc(`${report.landLord} ${report.year}`).set(report)
+    .then(() => {
+        alert("Report saved to database")
+    })
 }
 
 export const getReports = (func) => {
