@@ -6,7 +6,7 @@ function EditReport({expenses, optionList, expense, addExpense, handleChange}) {
             <form id="Expense" action="add seed" >
                 <Select>
                 <label htmlFor="Expense">Add Expense</label>
-                <select name="Expense"  onChange={(e) => handleChange(e)}>
+                <select className="form-select" name="Expense"  onChange={(e) => handleChange(e)}>
                 <option value="" defaultValue hidden>Choose here</option>
 
                 {
@@ -20,7 +20,7 @@ function EditReport({expenses, optionList, expense, addExpense, handleChange}) {
                 optionList.length > 0 ?  
                 
                 // <label for="expense">Add Expense</label>
-                <select name={expense} onChange={(e) => handleChange(e)}>
+                <select className="form-select" name={expense} onChange={(e) => handleChange(e)}>
                     <option value="" defaulfValue hidden>Choose here</option>
                     
                     {        
@@ -34,10 +34,10 @@ function EditReport({expenses, optionList, expense, addExpense, handleChange}) {
                 ''
                 }
                 <label htmlFor="qty">Quantity</label>
-                <input placeholder="QTY" name="Qty"type="number" onChange={(e) => handleChange(e)}/>
+                <input className="form-control" placeholder="QTY" name="Qty"type="number" onChange={(e) => handleChange(e)}/>
                 <label htmlFor="price">Price Per Unit</label>
-                <input placeholder="Price" name="Price"type="number" onChange={(e) => handleChange(e)}/>
-                <button type="submit" onClick={(e) => addExpense(e, expense)}>ADD</button>
+                <input className="form-control" placeholder="Price" name="Price"type="number" onChange={(e) => handleChange(e)}/>
+                <button class="btn btn-outline-primary" type="submit" onClick={(e) => addExpense(e, expense)}>ADD</button>
                 </Select>
             </form>
         </Container>
@@ -55,6 +55,10 @@ const Select = styled.div`
     padding: 10px;
     display: flex;
     flex-direction: column;
+
+    button {
+        margin-top: 10px;
+    }
 `
 
 export default EditReport;

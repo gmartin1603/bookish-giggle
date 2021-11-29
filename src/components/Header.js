@@ -11,12 +11,12 @@ function Header(props) {
 
     return (
         <Container>
-            <Nav>
-                <Link to="/">Create New Report</Link> |
-                <Link to="/View">View and Edit Reports</Link> | 
-                <Link to="Add">Add New Option</Link> | 
-                <Link onClick={() => signOut()}>Logout</Link>
+            <Nav className="nav nav-tabs">
+                <Link className="nav-link" to="/">Create New Report</Link>
+                <Link className="nav-link" to="/View">View and Edit Reports</Link>
+                <Link className="nav-link" to="Add">Add New Option</Link>
             </Nav>
+                <button className="btn btn-danger" onClick={() => signOut()}>Logout</button>
         </Container>
     );
 }
@@ -26,7 +26,7 @@ const Container = styled.div`
     width: 100vw;
     border-bottom: 3px solid black;
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: center;
 
     @media print {
@@ -36,12 +36,8 @@ const Container = styled.div`
 
 const Nav = styled.nav`
     a {
-        padding: 10px;
         text-decoration: none;
         color: black;
-    }
-    a:active {
-        color: red;
     }
 `
 

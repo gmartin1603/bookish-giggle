@@ -292,6 +292,7 @@ function App() {
               handleChange={handleChange}
               setNewLabel={setNewLabel}
               addNewLabel={addNewLabel}
+              newLabel={newLabel}
               />
             </Route>
             <Route path="/View">

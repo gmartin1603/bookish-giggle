@@ -12,7 +12,7 @@ function ReportSelect({reports, setChemList, setCrop, setFertList, setFuelList, 
 
     return (
         <Container> 
-            <select onChange={(e) => handleChange(e.target.value)} >
+            <select className="form-select" onChange={(e) => handleChange(e.target.value)} >
                 <option value="" defaultValue hidden>Choose a report to view</option>
                 {
                     reports.length > 0 &&
@@ -30,6 +30,10 @@ const Container = styled.div`
     display: flex;
     justify-content: center;
     padding: 10px;
+
+    select {
+        width: 32%
+    }
 
     @media print {
         display: none;

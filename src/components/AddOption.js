@@ -7,7 +7,7 @@ function AddOption({handleChange, expenses, add, expense, labels, addLabel, setN
             <form id='add__new' action="add">
                 <Select>
                 <label htmlFor="Add_Expense">Add New Expense</label>
-                <select name="Add_Expense"  onChange={(e) => handleChange(e)}>
+                <select className="form-select" name="Add_Expense"  onChange={(e) => handleChange(e)}>
                 <option value="" defaultValue hidden>Choose here</option>
 
                 {
@@ -25,13 +25,13 @@ function AddOption({handleChange, expenses, add, expense, labels, addLabel, setN
                 <input type="text" onChange={(e) => setNewOption(e.target.value)}/>
                 : ''
                 }  
-                <button type="submit" onClick={(e) => addNewExpense(e)}>ADD</button>
+                <button class="btn btn-outline-primary" type="submit" onClick={(e) => addNewExpense(e)}>ADD</button>
                 </Select>
             </form>
             <form id="add__new__label" action="add__new__label">
                 <Select>
                 <label htmlFor="Add_New_Label">Add Heading Option</label>
-                <select name="Add_New_Label" onChange={(e) => handleChange(e)}>
+                <select className="form-select" name="Add_New_Label" onChange={(e) => handleChange(e)}>
                 <option value="" defaultValue hidden>Choose here</option>
                 {
                     labels &&
@@ -46,7 +46,7 @@ function AddOption({handleChange, expenses, add, expense, labels, addLabel, setN
                     :
                     ''
                 }
-                    <button type="submit" onClick={(e) => addNewLabel(e)}>ADD</button>
+                    <button class="btn btn-outline-primary" type="submit" onClick={(e) => addNewLabel(e)}>ADD</button>
 
                 </Select>
             </form>
@@ -62,7 +62,12 @@ const Select = styled.div`
   padding: 50px;
   display: flex;
   flex-direction: column;
-  width: 200px;
+  align-items: center;
+  font-weight: 550;
+  font-size: 30px;
+    button {
+        margin-top: 20px;
+    }
 `
 
 export default AddOption;

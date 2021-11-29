@@ -27,7 +27,7 @@ function Text({total, landLord, crop, year, setSeedList, seedList, setChemList, 
             </Header>
             {
                 seedList.length > 0 ?
-                <h3>Seed</h3>
+                <h4>Seed</h4>
                 : ''
             }
             <Expense>
@@ -45,7 +45,7 @@ function Text({total, landLord, crop, year, setSeedList, seedList, setChemList, 
             </Expense>
             {
                 chemList.length > 0 ?
-                <h3>Chemicals</h3>
+                <h4>Chemicals</h4>
                 : ''
             }
             <Expense>
@@ -63,7 +63,7 @@ function Text({total, landLord, crop, year, setSeedList, seedList, setChemList, 
             </Expense>
             {
                 fertList.length > 0 ?
-                <h3>Fertilizer</h3>
+                <h4>Fertilizer</h4>
                 : ''
             }
             <Expense>
@@ -81,7 +81,7 @@ function Text({total, landLord, crop, year, setSeedList, seedList, setChemList, 
             </Expense>
             {
                 fuelList.length > 0 ?
-                <h3>Fuel</h3>
+                <h4>Fuel</h4>
                 : ''
             }
             <Expense>
@@ -99,7 +99,7 @@ function Text({total, landLord, crop, year, setSeedList, seedList, setChemList, 
             </Expense>
             {
                 truckingList.length > 0 ?
-                <h3>Trucking</h3>
+                <h4>Trucking</h4>
                 : ''
             }
             <Expense>
@@ -117,17 +117,21 @@ function Text({total, landLord, crop, year, setSeedList, seedList, setChemList, 
             </Expense>
             {
                 total > 0 ?
-                <Total>
-                <h3>Total Billed</h3>
-                <p>${total}</p>
+                <Total className="row justify-content-end">
+                    <div className="col-3">
+                        <h5>Total Billed</h5>
+                    </div>
+                    <div className="col-2">
+                        <p>${total}</p>
+                    </div>
                 </Total>
                 : ''
             }
             {
                 landLord && year !== '' ?
                 <Buttons>
-                    <button onClick={() => saveReport()}>Save</button>
-                    <button onClick={() => window.print()}>Print</button>
+                    <button class="btn btn-outline-success" onClick={() => saveReport()}>Save</button>
+                    <button class="btn btn-outline-primary" onClick={() => window.print()}>Print</button>
                 </Buttons>
                 :
                 ''
@@ -137,9 +141,14 @@ function Text({total, landLord, crop, year, setSeedList, seedList, setChemList, 
 }
 
 const Container = styled.div`
-    h3 {
+    width: 50%;
+
+    h4, h5 {
         text-align: center;
-        padding: 10px;
+        padding: 5px;
+    }
+    @media print {
+        width: 100%;
     }
 `
 
@@ -159,7 +168,11 @@ const Total = styled.div`
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    padding: 0 80px;
+    margin-right: 150px;
+
+    p {
+        font-size: 20px;
+    }
 `
 
 export default Text;
