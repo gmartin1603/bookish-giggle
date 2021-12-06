@@ -9,6 +9,8 @@ import ReportSelect from "./components/ReportSelect";
 import EditReport from "./components/EditReport";
 import AddOption from "./components/AddOption";
 import Login from "./components/Login";
+import { NewProvider } from "./context/providers/NewProvider";
+import newReducer, { newState } from "./context/reducers/NewReducer";
 
 
 function App() {
@@ -98,9 +100,7 @@ function App() {
     let i = arr.length;
     let array = []
     while(i--){
-        if(arr[i] 
-           && arr[i].hasOwnProperty(attr) 
-           && arr[i][attr] === value){
+        if(arr[i] && arr[i].hasOwnProperty(attr) && arr[i][attr] === value){
              let t = total - arr[i].qty * arr[i].price
              setTotal(t)
           }else{
@@ -204,7 +204,7 @@ function App() {
             name: chemical,
             price: price,
             qty: qty,
-            unit: "lb",
+            unit: "Lb",
             id: id
           }
           setChemList([...chemList, obj])
@@ -214,7 +214,7 @@ function App() {
             name: chemical,
             price: price,
             qty: qty,
-            unit: "gal",
+            unit: "Gal",
             id: id
           }
           setChemList([...chemList, obj])
@@ -224,7 +224,7 @@ function App() {
             name: fertilizer,
             price: price,
             qty: qty,
-            unit: "lb",
+            unit: "Lb",
             id: id
           }
           setFertList([...fertList, obj])
@@ -234,7 +234,7 @@ function App() {
             name: fertilizer,
             price: price,
             qty: qty,
-            unit: "gal",
+            unit: "Gal",
             id: id
           }
           setFertList([...fertList, obj])
@@ -244,7 +244,7 @@ function App() {
             name: fuel,
             price: price,
             qty: qty,
-            unit: "gal",
+            unit: "Gal",
             id: id
           }
           setFuelList([...fuelList, obj])
@@ -254,7 +254,7 @@ function App() {
             name: trucking,
             price: price,
             qty: qty,
-            unit: "bushel",
+            unit: "Bu",
             id: id
           }
           setTruckingList([...truckingList, obj])
@@ -279,91 +279,22 @@ function App() {
         
         <Header setUser={setUser}/>
           <Switch>
-            <Route path="/Add">
-              <AddOption
-              labels={labels} 
-              add={add}
-              expenses={expenses}
-              expense={expense}
-              addLabel={addLabel}
-              setNewOption={setNewOption}
-              setNewExpense={setNewExpense}
-              addNewExpense={addNewExpense}
-              handleChange={handleChange}
-              setNewLabel={setNewLabel}
-              addNewLabel={addNewLabel}
-              newLabel={newLabel}
-              />
+            {/* <Route path="/Add">
+              <AddOption/>
             </Route>
             <Route path="/View">
-              <ReportSelect 
-                setLandLord={setLandLord}
-                setYear={setYear}
-                setCrop={setCrop}
-                setSeedList={setSeedList}
-                setTruckingList={setTruckingList}
-                setFertList={setFertList}
-                setChemList={setChemList}
-                setFuelList={setFuelList}
-                setTotal={setTotal}
-                reports={reports}
-                />
+              <ReportSelect/>
               <Content>
-              <EditReport
-                labels={labels} 
-                optionList={optionList}
-                expenses={expenses}
-                expense={expense}
-                addExpense={addExpense}
-                handleChange={handleChange}
-                />
-              <Text
-                  total={total}
-                  landLord={landLord}
-                  crop={crop}
-                  year={year}
-                  setSeedList={setSeedList}
-                  seedList={seedList}
-                  setChemList={setChemList}
-                  chemList={chemList}
-                  setFertList={setFertList}
-                  fertList={fertList}
-                  setTruckingList={setTruckingList}
-                  truckingList={truckingList}
-                  setFuelList={setFuelList}
-                  fuelList={fuelList}
-                  removeItem={removeItem}
-                  />
+              <EditReport/>
+              <Text />
               </Content>
-            </Route>
+            </Route> */}
             <Route path="/">
+              <NewProvider initialState={newState} reducer={newReducer}>
               <Content>
-                <NewReport 
-                labels={labels} 
-                optionList={optionList}
-                expenses={expenses}
-                expense={expense}
-                addExpense={addExpense}
-                handleChange={handleChange}
-                /> 
-                <Text
-                total={total}
-                landLord={landLord}
-                crop={crop}
-                year={year}
-                setSeedList={setSeedList}
-                seedList={seedList}
-                setChemList={setChemList}
-                chemList={chemList}
-                setFertList={setFertList}
-                fertList={fertList}
-                setTruckingList={setTruckingList}
-                truckingList={truckingList}
-                setFuelList={setFuelList}
-                fuelList={fuelList}
-                removeItem={removeItem}
-                />
+                <NewReport /> 
               </Content>
+              </NewProvider>
             </Route>
           </Switch>
       </Container>

@@ -1,25 +1,54 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components'
 import { writeReport } from '../data';
 import Item from './Item'
 
-function Text({total, landLord, crop, year, setSeedList, seedList, setChemList, chemList, setFertList, fertList, setTruckingList, truckingList, setFuelList, fuelList, removeItem}) {
+function Text({removeItem, landLord, seedList, crop, year, chemList, fertList, fuelList, truckingList}) {
+    
+
+    const [total, setTotal] = useState(0)
+    
     const saveReport = () => {
         //build report object
-        let report = {
-          landLord,
-          crop,
-          year,
-          seedList,
-          chemList,
-          fertList,
-          truckingList,
-          fuelList,
-          total,
+        let obj = {
+            landLord, 
+            seedList, 
+            crop, 
+            year, 
+            chemList, 
+            fertList, 
+            fuelList, 
+            truckingList
         }
-        //send obj to firebase
-        writeReport(report)
-      }
+        writeReport(obj)
+    }
+
+    useEffect(() => {
+        let t = 0
+        seedList.length > 0 &&
+        seedList.map((obj) => (
+            t = t + (obj.price * obj.qty)
+        ))
+        fertList.length > 0 &&
+        fertList.map((obj) => (
+            t = t + (obj.price * obj.qty)
+        ))
+        chemList.length > 0 &&
+        chemList.map((obj) => (
+            t = t + (obj.price * obj.qty)
+        ))
+        fuelList.length > 0 &&
+        fuelList.map((obj) => (
+            t = t + (obj.price * obj.qty)
+        ))
+        truckingList.length > 0 &&
+        truckingList.map((obj) => (
+            t = t + (obj.price * obj.qty)
+        ))
+        setTotal(t)
+        
+    })
+
     return (
         <Container>
             <Header>
@@ -36,9 +65,7 @@ function Text({total, landLord, crop, year, setSeedList, seedList, setChemList, 
                 seedList.map((obj) => (
                     <Item 
                     obj={obj}
-                    list={seedList}
-                    state={setSeedList} 
-                    removeItem={removeItem} 
+                    removeItem={removeItem}
                     />
                 ))
                 }
@@ -53,10 +80,8 @@ function Text({total, landLord, crop, year, setSeedList, seedList, setChemList, 
                 chemList &&
                 chemList.map((obj) => (
                     <Item 
+                    removeItem={removeItem}
                     obj={obj}
-                    list={chemList}
-                    state={setChemList} 
-                    removeItem={removeItem} 
                     />
                 ))
                 }
@@ -68,13 +93,11 @@ function Text({total, landLord, crop, year, setSeedList, seedList, setChemList, 
             }
             <Expense>
                 {
-                fertList &&
-                fertList.map((obj) => (
+               fertList &&
+               fertList.map((obj) => (
                     <Item 
+                    removeItem={removeItem}
                     obj={obj}
-                    list={fertList}
-                    state={setFertList} 
-                    removeItem={removeItem} 
                     />
                 ))
                 }
@@ -89,10 +112,8 @@ function Text({total, landLord, crop, year, setSeedList, seedList, setChemList, 
                 fuelList &&
                 fuelList.map((obj) => (
                     <Item 
+                    removeItem={removeItem}
                     obj={obj}
-                    list={fuelList}
-                    state={setFuelList} 
-                    removeItem={removeItem} 
                     />
                 ))
                 }
@@ -107,10 +128,8 @@ function Text({total, landLord, crop, year, setSeedList, seedList, setChemList, 
                 truckingList &&
                 truckingList.map((obj) => (
                     <Item 
+                    removeItem={removeItem}
                     obj={obj}
-                    list={truckingList}
-                    state={setTruckingList} 
-                    removeItem={removeItem} 
                     /> 
                 ))
                 }
