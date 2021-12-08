@@ -10,11 +10,12 @@ export const newState = {
     ],
 
     expenses: [
-        {label: "Seed", id: "seedList", options: ["pioneer"]},
-        {label: "Chemical", id: "chemList", options: ["roundup"]},
-        {label: "Fertilizer", id: "fertList", options: ["Manure", "0-0-50"]},
-        {label: "Fuel", id: "fuelList", options: ["Diesel"]},
-        {label: "Trucking", id: "truckingList", options: ["Trucking"]},
+        {label: "Seed", id: "seedList", options: ["pioneer"], units: ["Bag"]},
+        {label: "Chemical", id: "chemList", options: ["roundup"], units: ["Lb", "Gal"]},
+        {label: "Fertilizer", id: "fertList", options: ["Manure", "0-0-50"], units: ["LB", "Gal", "Ton"]},
+        {label: "Fuel", id: "fuelList", options: ["Diesel"], units: ["Gal"]},
+        {label: "Trucking", id: "truckingList", options: ["Corn", "Soy Beans"], units: ["Bu"]},
+        {label: "Crop Insurance", id: "insList", options: ["Corn", "Soy Beans"], units: ["Acre"]},
     ],
     landLord: "",
     crop: "",
@@ -24,18 +25,19 @@ export const newState = {
     fertList: [],
     truckingList: [],
     fuelList: [],
+    insList: [],
 }
 
-export const textObj = {
-    landLord: newState.landLord,
-    year: newState.year,
-    crop: newState.crop,
-    seedList: newState.seedList,
-    chemList: newState.chemList,
-    fertList: newState.fertList,
-    fuelList: newState.fuelList,
-    truckingList: newState.truckingList,
-} 
+// export const textObj = {
+//     landLord: newState.landLord,
+//     year: newState.year,
+//     crop: newState.crop,
+//     seedList: newState.seedList,
+//     chemList: newState.chemList,
+//     fertList: newState.fertList,
+//     fuelList: newState.fuelList,
+//     truckingList: newState.truckingList,
+// } 
 
 const newReducer = (state, action) => {
     // console.log(action, state)

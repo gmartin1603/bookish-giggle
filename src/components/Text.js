@@ -2,138 +2,80 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components'
 import { writeReport } from '../data';
 import Item from './Item'
+import Row from './Row';
 
-function Text({removeItem, landLord, seedList, crop, year, chemList, fertList, fuelList, truckingList}) {
+function Text({removeItem, body, total, head,}) {
     
 
-    const [total, setTotal] = useState(0)
+    
     
     const saveReport = () => {
+
         //build report object
         let obj = {
-            landLord, 
-            seedList, 
-            crop, 
-            year, 
-            chemList, 
-            fertList, 
-            fuelList, 
-            truckingList
+            landLord: head.ll, 
+            seedList: body.seed, 
+            crop: head.cp, 
+            year: head.yr, 
+            chemList: body.chemicals, 
+            fertList: body.fertilizer, 
+            fuelList: body.fuel, 
+            truckingList: body.trucking,
+            insList: body.insurance,
+            total
         }
         writeReport(obj)
     }
 
-    useEffect(() => {
-        let t = 0
-        seedList.length > 0 &&
-        seedList.map((obj) => (
-            t = t + (obj.price * obj.qty)
-        ))
-        fertList.length > 0 &&
-        fertList.map((obj) => (
-            t = t + (obj.price * obj.qty)
-        ))
-        chemList.length > 0 &&
-        chemList.map((obj) => (
-            t = t + (obj.price * obj.qty)
-        ))
-        fuelList.length > 0 &&
-        fuelList.map((obj) => (
-            t = t + (obj.price * obj.qty)
-        ))
-        truckingList.length > 0 &&
-        truckingList.map((obj) => (
-            t = t + (obj.price * obj.qty)
-        ))
-        setTotal(t)
+    // useEffect(() => {
+    //     let t = 0
+    //     seedList.length > 0 &&
+    //     seedList.map((obj) => (
+    //         t = t + (obj.price * obj.qty)
+    //     ))
+    //     fertList.length > 0 &&
+    //     fertList.map((obj) => (
+    //         t = t + (obj.price * obj.qty)
+    //     ))
+    //     chemList.length > 0 &&
+    //     chemList.map((obj) => (
+    //         t = t + (obj.price * obj.qty)
+    //     ))
+    //     fuelList.length > 0 &&
+    //     fuelList.map((obj) => (
+    //         t = t + (obj.price * obj.qty)
+    //     ))
+    //     truckingList.length > 0 &&
+    //     truckingList.map((obj) => (
+    //         t = t + (obj.price * obj.qty)
+    //     ))
+    //     setTotal(t)
         
-    })
+    // })
 
     return (
         <Container>
             <Header>
-                <h2>{landLord} {crop} {year}</h2>
+                <h2>{head.ll} {head.cp} {head.yr}</h2>
             </Header>
+
             {
-                seedList.length > 0 ?
-                <h4>Seed</h4>
-                : ''
+                body && 
+                Object.keys(body).map((key) => {
+                    
+                    if (body[key].length > 0) {
+                        console.log(body)
+                        let arr = body[key]
+                        return (
+                            <Row
+                            head={key}
+                            arr={arr}
+                            removeItem={removeItem}
+                            />
+                        )
+                    }
+                })
             }
-            <Expense>
-                {
-                seedList &&
-                seedList.map((obj) => (
-                    <Item 
-                    obj={obj}
-                    removeItem={removeItem}
-                    />
-                ))
-                }
-            </Expense>
-            {
-                chemList.length > 0 ?
-                <h4>Chemicals</h4>
-                : ''
-            }
-            <Expense>
-                {
-                chemList &&
-                chemList.map((obj) => (
-                    <Item 
-                    removeItem={removeItem}
-                    obj={obj}
-                    />
-                ))
-                }
-            </Expense>
-            {
-                fertList.length > 0 ?
-                <h4>Fertilizer</h4>
-                : ''
-            }
-            <Expense>
-                {
-               fertList &&
-               fertList.map((obj) => (
-                    <Item 
-                    removeItem={removeItem}
-                    obj={obj}
-                    />
-                ))
-                }
-            </Expense>
-            {
-                fuelList.length > 0 ?
-                <h4>Fuel</h4>
-                : ''
-            }
-            <Expense>
-                {
-                fuelList &&
-                fuelList.map((obj) => (
-                    <Item 
-                    removeItem={removeItem}
-                    obj={obj}
-                    />
-                ))
-                }
-            </Expense>
-            {
-                truckingList.length > 0 ?
-                <h4>Trucking</h4>
-                : ''
-            }
-            <Expense>
-                {
-                truckingList &&
-                truckingList.map((obj) => (
-                    <Item 
-                    removeItem={removeItem}
-                    obj={obj}
-                    /> 
-                ))
-                }
-            </Expense>
             {
                 total > 0 ?
                 <Total className="row justify-content-end">
@@ -147,7 +89,7 @@ function Text({removeItem, landLord, seedList, crop, year, chemList, fertList, f
                 : ''
             }
             {
-                landLord && year !== '' ?
+                head.ll && head.yr !== '' ?
                 <Buttons>
                     <button class="btn btn-outline-success" onClick={() => saveReport()}>Save</button>
                     <button class="btn btn-outline-primary" onClick={() => window.print()}>Print</button>
@@ -173,10 +115,6 @@ const Container = styled.div`
 
 const Header = styled.div`
   text-align: center;
-`
-const Expense = styled.div`
-  display: flex;
-  flex-direction: column;
 `
 const Buttons = styled.div`
     @media print {

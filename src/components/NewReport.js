@@ -11,17 +11,15 @@ function NewReport() {
     const [optionList, setOptionList] = useState([])
     const [cat, setCat] = useState('')
     const [itm, setItm] = useState('')
-    const [price, setPrice] = useState('')
+    const [price, setPrice] = useState(0)
     const [chk, setChk] = useState('')
     const [qty, setQty] = useState(0)
     const [disa, setDisa] = useState(true)
-    
-    const units = [
-        "Lb", "Gal", "Mile", 'Bag', "Oz", "Acre", 
-    ]
+    const [units, setUnits] = useState()
+    const [unit, setUnit] = useState()
+    const [total, setTotal] = useState(0)
 
     const validate = () => {
-        console.log("FLAG")
         if ((cat && itm && chk !== '') && (qty && price > 0)) {
             console.log("validated => true")
             if (disa) {
@@ -46,11 +44,21 @@ function NewReport() {
     const handleChange = (e) => {
         setCat(e.target.value)
         setItm('')
+        setUnit()
+        setUnits()
   
         state.expenses?.map((item) => {
-          if(item.id === e.target.value) {
+        if(item.id === e.target.value) {
             setOptionList(item.options)
-          } else return null
+
+            if(item.units.length === 1) {
+                // auto selects unit if only one option exists
+                setUnit(item.units[0])
+                setChk(item.units[0])
+            } else if (item.units.length > 1){
+                setUnits(item.units)  
+            }
+        }
         })
       }
 
@@ -65,6 +73,8 @@ function NewReport() {
         arr: cat,
     }
     let int = id + 1
+    let t = total + (qty * price)
+    setTotal(t)
     
     dispatch({
         type: "ADD-OBJ",
@@ -83,18 +93,28 @@ function NewReport() {
         let array = []
         while(i--){
             if(a[i] && a[i].hasOwnProperty(attr) && a[i][attr] === value){
-                //  console.log("HIT")
+                //  remove quantity * price from total
+                let q = a[i]["qty"]
+                let p = a[i]["price"]
+                let t = total - (q * p)
+                setTotal(t)
             }else{
+            // new array with target obj removed
             array.splice(0, 0, a[i])
             // console.log(array)
             }      
         }
+        // update context store
         dispatch({
             type: 'UPDATE',
             name: arr,
             load: array,
         })
     }
+
+    useEffect(() => {
+        validate()
+    })
 
     return (
         <Main>
@@ -122,7 +142,7 @@ function NewReport() {
             <form id="expense" action="add" >
             <Select>
             <label htmlFor="Expense">Add Expense</label>
-            <select className="form-select" name="expense"  onChange={(e) => {handleChange(e); validate()}}>
+            <select className="form-select" name="expense"  onChange={(e) => handleChange(e)}>
             <option value="" defaultValue hidden>Choose here</option>
 
             {
@@ -137,7 +157,7 @@ function NewReport() {
                  cat !== '' ?  
                 
                 // <label for="expense">Add Expense</label>
-                <select className="form-select" name={cat} onChange={(e) => {setItm(e.target.value); validate()}}>
+                <select className="form-select" name={cat} onChange={(e) => setItm(e.target.value)}>
                         <option value="" defaultValue hidden>Choose here</option>
                     {        
                         
@@ -147,38 +167,61 @@ function NewReport() {
                         
                     }
                 </select>
-                    :
-                ''
+                  :
+                  ''
             }
-
-            {/* <label htmlFor="Expense">Unit of Measure</label>
-            <select className="form-select" name="expense"  onChange={(e) => {setChk(e.target.value); validate()}}>
-            <option value="" defaultValue hidden>Choose here</option> */}
 
             {
-               units.map((uni) => (
-                <checkbox key={uni} value={uni}> {uni} </checkbox>
-                ))
+                units && cat?
+                <Check>    
+                    <label htmlFor="qty">Unit of Measure</label>
+                    <ul>
+                    {
+                        units.map((uni) => (
+                            <li>
+                                <label for={uni}> {uni} </label>
+                                <input name={uni} type="checkbox" value={uni} onChange={(e) => setChk(e.target.value)} />
+                            </li>
+                        ))
+                    }
+                    </ul>
+                </Check>
+                :
+                ''
             }
-            {/* </select> */}
+            {
+                unit && cat ?
+                <Check>
+                    <label htmlFor="qty">Unit of Measure</label>
+                    <div>
+                        <label for={unit}>{unit}</label>
+                        <input name={unit} type="checkbox" checked={true} value={unit}/>
+                    </div>
+                </Check>
+                    :
+                    ''
+            }
 
             <label htmlFor="qty">Quantity</label>
-            <input className="form-control" placeholder="QTY" name="Qty"type="number" onChange={(e) => {setQty(e.target.value); validate()}}/>
+            <input className="form-control" placeholder="QTY" name="qty" type="number" onChange={(e) => setQty(e.target.value)}/>
             <label htmlFor="price">Price Per Unit</label>
-            <input className="form-control" placeholder="Price" name="Price"type="number" onChange={(e) => {setPrice(e.target.value); validate()}}/>
+            <input className="form-control" placeholder="Price" name="price" type="number" onChange={(e) => setPrice(e.target.value)}/>
             <button class="btn btn-outline-primary" disabled={disa} type="submit" onClick={(e) => addExpense(e)}>ADD</button>
             </Select>
             </form>
         </Container>
         <Text
-            landLord={state.landLord}
-            year= {state.year}
-            crop= {state.crop}
-            seedList= {state.seedList}
-            chemList= {state.chemList}
-            fertList= {state.fertList}
-            fuelList= {state.fuelList}
-            truckingList= {state.truckingList}
+            head={{ll: state.landLord,
+                yr: state.year,
+                cp: state.crop,}}
+            body={{
+            seed: state.seedList,
+            chemicals: state.chemList,
+            fertilizer: state.fertList,
+            fuel: state.fuelList,
+            trucking: state.truckingList,
+            insurance: state.insList,}}
+            total={total}
             removeItem= {removeItem}
         />
         </Main>
@@ -215,6 +258,40 @@ const Select = styled.div`
     }
     button:disabled {
         display: none;
+    }
+`
+const Check = styled.div`
+    display: flex;
+    flex-direction: column;
+    label {
+        margin-top: 10px;
+    }
+    ul {
+        margin: 0;
+        padding:0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        list-style-type: none;
+        li {
+            margin: 10px;
+            input {
+                margin-left: 10px;
+            }
+        }
+        
+    }
+    div {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        input {
+            margin-top: 10px;
+            margin-left: 10px;
+            
+        }
+        
     }
 `
 
