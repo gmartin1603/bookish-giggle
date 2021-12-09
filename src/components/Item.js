@@ -5,9 +5,9 @@ function Item({obj, removeItem}) {
 
     
 
-    // useEffect(() => {
-    //    console.log(obj)
-    // })
+    useEffect(() => {
+       console.log(obj)
+    })
 
     return (
         <Container className="row justify-content-center">

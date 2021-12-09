@@ -1,5 +1,5 @@
-export const newState = {
-    labels: [
+export const editState = {
+    reports: [
         // {id: "landLord", label: "Land Lord", options: ['A', 'B', 'C']},
         // {id: "crop", label: "Crop", options: ['Corn', 'Beans']},
         // {id: "year", label: "Year", options: ['2019', '2020']},
@@ -26,20 +26,9 @@ export const newState = {
     truckingList: [],
     fuelList: [],
     insList: [],
-}
+} 
 
-// export const textObj = {
-//     landLord: newState.landLord,
-//     year: newState.year,
-//     crop: newState.crop,
-//     seedList: newState.seedList,
-//     chemList: newState.chemList,
-//     fertList: newState.fertList,
-//     fuelList: newState.fuelList,
-//     truckingList: newState.truckingList,
-// } 
-
-const newReducer = (state, action) => {
+const editReducer = (state, action) => {
     // console.log(action, state)
     // console.log(action)
     switch(action.type) {
@@ -68,16 +57,7 @@ const newReducer = (state, action) => {
                     ...state,
                     [action.name]: action.load,
                 }
-            )
-        case "UPDATE":
-            console.log(action)
-            return (
-                {
-                    ...state,
-                    [action.name]: action.load,
-                }
-            )
-        
+            )   
         case "RESET":
             return (
                 action.load
@@ -89,4 +69,4 @@ const newReducer = (state, action) => {
     
 }
 
-export default newReducer
+export default editReducer

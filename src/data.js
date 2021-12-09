@@ -21,10 +21,18 @@ export const getData = (coll, func) => {
         snapshot.forEach((docs) => {
             switch (coll) {
                 case "labels":
-                    func(docs.data().expenses)
+                    func({
+                        type: "ADD-ARR",
+                        name: 'labels',
+                        load: docs.data().expenses,
+                    })
                     break
                 case "expenses":
-                    func(docs.data().expenses)
+                    func({
+                        type: "ADD-ARR",
+                        name: 'expenses',
+                        load: docs.data().expenses,
+                    })
                     break
                 default:
                     return
@@ -53,20 +61,24 @@ export const writeData = (coll, exp, expenses) => {
 }
 
 export const writeReport = (report) => {
-    db.collection("reports").doc(`${report.landLord} ${report.year}`).set(report)
+    db.collection("reports").doc(`${report.landLord} ${report.crop} ${report.year}`).set(report)
     .then(() => {
         alert("Report saved to database")
     })
 }
 
-export const getReports = (func) => {
+export const getReports = (dispatch) => {
     let arr = []
     db.collection("reports").get().then((snapshot) => {
         snapshot.forEach((doc) => {
             // console.log(doc.data())
             arr.push(doc.data())
             return (
-                func(arr)
+                dispatch({
+                    type: "ADD-ARR",
+                    name: "reports",
+                    load: arr,
+                })
             )
         })
     })

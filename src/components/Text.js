@@ -64,7 +64,6 @@ function Text({removeItem, body, total, head,}) {
                 Object.keys(body).map((key) => {
                     
                     if (body[key].length > 0) {
-                        console.log(body)
                         let arr = body[key]
                         return (
                             <Row
@@ -83,13 +82,13 @@ function Text({removeItem, body, total, head,}) {
                         <h5>Total Billed</h5>
                     </div>
                     <div className="col-2">
-                        <p>${total}</p>
+                        <p>${total.toFixed(2)}</p>
                     </div>
                 </Total>
                 : ''
             }
             {
-                head.ll && head.yr !== '' ?
+                head.ll && head.cp && head.yr !== '' ?
                 <Buttons>
                     <button class="btn btn-outline-success" onClick={() => saveReport()}>Save</button>
                     <button class="btn btn-outline-primary" onClick={() => window.print()}>Print</button>
@@ -102,7 +101,7 @@ function Text({removeItem, body, total, head,}) {
 }
 
 const Container = styled.div`
-    width: 50%;
+    width: 60%;
 
     h4, h5 {
         text-align: center;

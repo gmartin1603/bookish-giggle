@@ -1,23 +1,62 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components'
-import { getReport } from '../data';
+import { useEditValue } from '../context/providers/EditProvider';
+import { getReport, getReports } from '../data';
 
-function ReportSelect({reports, setChemList, setCrop, setFertList, setFuelList, setLandLord,setYear, setSeedList, setTruckingList, setTotal}) {
+function ReportSelect({setTotal}) {
     
+    const [state, dispatch] = useEditValue()
 
-    const handleChange = (value) => {
-        getReport(value, setChemList, setCrop, setFertList, setFuelList, setLandLord,setYear, setSeedList, setTruckingList, setTotal)
+    useEffect(() => {
+        getReports(dispatch)
+        console.log(state)
+    },[])
+
+    const handleChange = (e) => {
+        e.preventDefault()
+        let arr = state.reports
+        let attr = "id"
+        let i = arr.length
+        while (i--) {
+            if(arr[i] && arr[i].hasOwnProperty(attr) && arr[i][attr] === e.target.value){ 
+                console.log(arr[i])
+                Object.keys(arr[i]).forEach(key => {
+                    console.log(typeof arr[i][key])
+                    switch (typeof arr[i][key]) {
+                        case 'string':
+                            dispatch({
+                                type: "ADD-STRING",
+                                name: key,
+                                load: arr[i][key]
+                            })
+                        break;
+                        case 'object':
+                            dispatch({ 
+                                type: 'ADD-ARR',
+                                name: key,
+                                load: arr[i][key]
+                            })
+                        break;
+                        case 'number':
+                            setTotal(arr[i][key])
+                        break;
+                        default:
+                            return
+                    }
+                })
+            }
+        }
         
     }
 
     return (
         <Container> 
-            <select className="form-select" onChange={(e) => handleChange(e.target.value)} >
+            <select className="form-select" onChange={(e) => handleChange(e)} >
                 <option value="" defaultValue hidden>Choose a report to view</option>
                 {
-                    reports.length > 0 &&
-                    reports.map((report) => (
-                        <option value={`${report.landLord} ${report.year}`}>{report.landLord} {report.year}</option>
+                    state.reports.length > 0 &&
+                    state.reports.map((report) => (
+                        <option value={report.id}>{report.landLord} {report.year} {report.crop}</option>
                     ))
                 }
             </select>

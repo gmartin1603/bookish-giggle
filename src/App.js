@@ -11,6 +11,8 @@ import AddOption from "./components/AddOption";
 import Login from "./components/Login";
 import { NewProvider } from "./context/providers/NewProvider";
 import newReducer, { newState } from "./context/reducers/NewReducer";
+import { EditProvider } from "./context/providers/EditProvider";
+import editReducer, { editState } from "./context/reducers/EditReducer";
 
 
 function App() {
@@ -29,11 +31,11 @@ function App() {
     user && setUser(user.email)
   })
 
-  useEffect(() => {
-    getData('labels', setLabels)
-    getData('expenses', setExpenses)
-    getReports(setReports)
-  },[])
+  // useEffect(() => {
+  //   getData('labels', setLabels)
+  //   getData('expenses', setExpenses)
+  //   getReports(setReports)
+  // },[])
 
   const addOption = (arr, attr, value, additon, func) => {
     let i = arr.length
@@ -90,19 +92,15 @@ function App() {
           <Switch>
             {/* <Route path="/Add">
               <AddOption/>
-            </Route>
-            <Route path="/View">
-              <ReportSelect/>
-              <Content>
-              <EditReport/>
-              <Text />
-              </Content>
             </Route> */}
+            <Route path="/View">
+              <EditProvider initialState={editState} reducer={editReducer}>
+              <EditReport/>
+              </EditProvider>
+            </Route>
             <Route path="/">
               <NewProvider initialState={newState} reducer={newReducer}>
-              <Content>
                 <NewReport/> 
-              </Content>
               </NewProvider>
             </Route>
           </Switch>
@@ -118,10 +116,7 @@ const Container = styled.div`
   width: 100vw;
 `
 
-const Content = styled.div`
-  display: flex;
-  justify-content: space-around;
-`
+
 
 
 export default App;

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components'
 import { useNewValue } from '../context/providers/NewProvider';
+import { getData } from '../data';
 import Text from './Text';
 
 function NewReport() {
@@ -18,6 +19,12 @@ function NewReport() {
     const [units, setUnits] = useState()
     const [unit, setUnit] = useState()
     const [total, setTotal] = useState(0)
+
+    useEffect(() => {
+        getData('labels', dispatch)
+        getData('expenses', dispatch)
+        console.log("Data Retrived")
+      },[])
 
     const validate = () => {
         if ((cat && itm && chk !== '') && (qty && price > 0)) {
@@ -47,7 +54,7 @@ function NewReport() {
         setUnit()
         setUnits()
   
-        state.expenses?.map((item) => {
+        state.expenses.map((item) => {
         if(item.id === e.target.value) {
             setOptionList(item.options)
 
@@ -58,9 +65,8 @@ function NewReport() {
             } else if (item.units.length > 1){
                 setUnits(item.units)  
             }
-        }
-        })
-      }
+        }})
+    }
 
     const addExpense = (e) => {
     e.preventDefault()
@@ -101,7 +107,7 @@ function NewReport() {
             }else{
             // new array with target obj removed
             array.splice(0, 0, a[i])
-            // console.log(array)
+            console.log(array)
             }      
         }
         // update context store
