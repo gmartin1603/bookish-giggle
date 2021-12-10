@@ -13,6 +13,8 @@ import { NewProvider } from "./context/providers/NewProvider";
 import newReducer, { newState } from "./context/reducers/NewReducer";
 import { EditProvider } from "./context/providers/EditProvider";
 import editReducer, { editState } from "./context/reducers/EditReducer";
+import { AddProvider } from "./context/providers/AddProvider";
+import addReducer, { addState } from "./context/reducers/AddReducer";
 
 
 function App() {
@@ -90,9 +92,11 @@ function App() {
         
         <Header setUser={setUser}/>
           <Switch>
-            {/* <Route path="/Add">
+            <Route path="/Add">
+              <AddProvider initialState={addState} reducer={addReducer} >
               <AddOption/>
-            </Route> */}
+              </AddProvider>
+            </Route>
             <Route path="/View">
               <EditProvider initialState={editState} reducer={editReducer}>
               <EditReport/>

@@ -1,7 +1,37 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components'
+import { useAddValue } from '../context/providers/AddProvider';
+import { getData } from '../data';
 
-function AddOption({handleChange, expenses, add, expense, labels, addLabel, setNewLabel, setNewExpense, setNewOption, addNewExpense, addNewLabel}) {
+function AddOption(props) {
+
+    const [state, dispatch] = useAddValue()
+
+    const [optionList, setOptionList] = useState()
+    const [edis, setEdis] = useState(true)
+    const [ldis, setLdis] = useState(true)
+    const [newLab, setNewLab] = useState('')
+    const [newExp, setNewExp] = useState('')
+
+    useEffect(() => {
+        getData("labels", dispatch)
+        getData("expenses", dispatch)
+        // console.log(props.labels)
+      },[])
+
+    const handleChange = (e) => {
+        
+        state.expenses.map((item) => {
+            if(item.id === e.target.value) {
+                setOptionList(item.options)
+            }})
+        setEdis(false)
+    }
+
+    const handleSubmit = (e) => {
+        e.preventDefault()
+    }
+
     return (
         <Container>
             <form id='add__new' action="add">
@@ -11,42 +41,33 @@ function AddOption({handleChange, expenses, add, expense, labels, addLabel, setN
                 <option value="" defaultValue hidden>Choose here</option>
 
                 {
-                    expenses &&
-                    expenses.map((obj) => (
+                    state.expenses &&
+                    state.expenses.map((obj) => (
                     <option key={obj.label}value={obj.label}> {obj.label} </option>
                     ))
                 }
                 </select>
-                {
-                add ?
-                <input id='add__new__input' type="text"onChange= {(e) => setNewExpense(e.target.value)}/>
-                :
-                expense ? 
-                <input type="text" onChange={(e) => setNewOption(e.target.value)}/>
-                : ''
-                }  
-                <button class="btn btn-outline-primary" type="submit" onClick={(e) => addNewExpense(e)}>ADD</button>
+                
+                
+                <input id='add__new__input' hidden={edis} type="text" value={newExp} onChange= {(e) => setNewExp(e)}/>
+                 
+                <button class="btn btn-outline-primary" type="submit" onClick={(e) => handleSubmit(e)}>ADD</button>
                 </Select>
             </form>
             <form id="add__new__label" action="add__new__label">
                 <Select>
                 <label htmlFor="Add_New_Label">Add Heading Option</label>
-                <select className="form-select" name="Add_New_Label" onChange={(e) => handleChange(e)}>
+                <select className="form-select" name="Add_New_Label" onChange={(e) => setLdis(!ldis)}>
                 <option value="" defaultValue hidden>Choose here</option>
                 {
-                    labels &&
-                    labels.map((obj) => (
+                    state.labels &&
+                    state.labels.map((obj) => (
                     <option value={obj.label}>{obj.label}</option>
                     ))
                 }
-                </select>
-                {
-                    addLabel ? 
-                    <input type="text"onChange= {(e) => setNewLabel(e.target.value)}/>
-                    :
-                    ''
-                }
-                    <button class="btn btn-outline-primary" type="submit" onClick={(e) => addNewLabel(e)}>ADD</button>
+                </select>   
+                    <input type="text" hidden={ldis} value={newLab} onChange= {(e) => setNewLab(e.target.value)}/>
+                    <button class="btn btn-outline-primary" type="submit" onClick={(e) => handleSubmit(e)}>ADD</button>
 
                 </Select>
             </form>
