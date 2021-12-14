@@ -18,46 +18,23 @@ export const auth = firebase.auth();
 export const getData = (coll, func) => {
     db.collection(coll).get()
     .then((snapshot) => {
-        snapshot.forEach((docs) => {
-            switch (coll) {
-                case "labels":
-                    func({
-                        type: "ADD-ARR",
-                        name: 'labels',
-                        load: docs.data().expenses,
-                    })
-                    break
-                case "expenses":
-                    func({
-                        type: "ADD-ARR",
-                        name: 'expenses',
-                        load: docs.data().expenses,
-                    })
-                    break
-                default:
-                    return
-            }
+        snapshot.forEach((doc) => {
+            console.log(doc.id)
+                func({
+                    type: "ADD-ARR",
+                    name: coll,
+                    load: doc.data().expenses,
+                })
         })
     })
 }
 
-export const writeData = (coll, exp, expenses) => {
+export const writeData = (coll, doc, key, load) => {
     
-    if (coll === 'expenses') {
-        if (exp) {
-            let array = expenses
-            array.push(exp)
-        }
-        db.collection(coll).doc('8CJ5sBDg05YAVjow0HUW').set({
-            expenses
-            
-        })
-    } else {
-        db.collection(coll).doc('4awrazQ0r23HC8hoEUfO').set({
-            expenses
-            
-        })
-    }
+        db.collection(coll).doc(doc).set({
+            [key]: load            
+        }, {merge: true})
+    
 }
 
 export const writeReport = (report) => {
