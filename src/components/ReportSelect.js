@@ -1,15 +1,15 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components'
 import { useEditValue } from '../context/providers/EditProvider';
-import { getReport, getReports } from '../data';
+import { getReports } from '../data';
 
-function ReportSelect({setTotal}) {
+function ReportSelect({setTotal, setHide}) {
     
     const [state, dispatch] = useEditValue()
 
     useEffect(() => {
         getReports(dispatch)
-        console.log(state)
+        // console.log(state)
     },[])
 
     const handleChange = (e) => {
@@ -19,9 +19,9 @@ function ReportSelect({setTotal}) {
         let i = arr.length
         while (i--) {
             if(arr[i] && arr[i].hasOwnProperty(attr) && arr[i][attr] === e.target.value){ 
-                console.log(arr[i])
+                // console.log(arr[i])
                 Object.keys(arr[i]).forEach(key => {
-                    console.log(typeof arr[i][key])
+                    // console.log(typeof arr[i][key])
                     switch (typeof arr[i][key]) {
                         case 'string':
                             dispatch({
@@ -46,7 +46,7 @@ function ReportSelect({setTotal}) {
                 })
             }
         }
-        
+        setHide(false)
     }
 
     return (
@@ -55,9 +55,11 @@ function ReportSelect({setTotal}) {
                 <option value="" defaultValue hidden>Choose a report to view</option>
                 {
                     state.reports.length > 0 &&
-                    state.reports.map((report) => (
+                    state.reports.map((report) => {
+                        // console.log(report)
+                        return (
                         <option value={report.id}>{report.landLord} {report.year} {report.crop}</option>
-                    ))
+                    )})
                 }
             </select>
         </Container>

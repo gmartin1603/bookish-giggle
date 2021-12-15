@@ -16,17 +16,29 @@ export const db = firebase.firestore();
 export const auth = firebase.auth();
 
 export const getData = (coll, func) => {
+    let arr = []
     db.collection(coll).get()
     .then((snapshot) => {
         snapshot.forEach((doc) => {
-            console.log(doc.id)
+            // console.log(doc.data())
+            arr.push(doc.data())
+            return (
                 func({
                     type: "ADD-ARR",
                     name: coll,
-                    load: doc.data().expenses,
+                    load: arr,
                 })
+            )
         })
     })
+}
+
+export const buildDoc = (coll, doc, label, options ) => {
+    db.collection(coll).doc(doc).set({
+        id: doc,
+        label: label,
+        options: options          
+    }, {merge: true})
 }
 
 export const writeData = (coll, doc, key, load) => {
@@ -58,21 +70,5 @@ export const getReports = (dispatch) => {
                 })
             )
         })
-    })
-}
-
-export const getReport = (doc, setChemList, setCrop, setFertList, setFuelList, setLandLord,setYear, setSeedList, setTruckingList, setTotal) => {
-    db.collection("reports").doc(doc).get()
-    .then((snapshot) => {
-        let obj = snapshot.data()
-        setLandLord(obj.landLord)
-        setYear(obj.year)
-        setCrop(obj.crop)
-        setSeedList(obj.seedList)
-        setTruckingList(obj.truckingList)
-        setFertList(obj.fertList)
-        setChemList(obj.chemList)
-        setFuelList(obj.fuelList)
-        setTotal(obj.total)
     })
 }

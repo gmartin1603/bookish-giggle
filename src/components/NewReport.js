@@ -8,7 +8,6 @@ function NewReport() {
 
     const [state, dispatch] = useNewValue()
 
-    const [id, setId] = useState(1)
     const [optionList, setOptionList] = useState([])
     const [cat, setCat] = useState('')
     const [itm, setItm] = useState('')
@@ -21,8 +20,8 @@ function NewReport() {
     const [total, setTotal] = useState(0)
 
     useEffect(() => {
-        getData('labels', dispatch)
-        getData('expenses', dispatch)
+        getData('labels-4.0', dispatch)
+        getData('expenses-4.0', dispatch)
         console.log("Data Retrived")
       },[])
 
@@ -54,15 +53,15 @@ function NewReport() {
         setUnit()
         setUnits()
   
-        state.expenses.map((item) => {
+        state["expenses-4.0"].map((item) => {
         if(item.id === e.target.value) {
             setOptionList(item.options)
 
-            if(item.units.length === 1) {
+            if(item.units && item.units.length === 1) {
                 // auto selects unit if only one option exists
                 setUnit(item.units[0])
                 setChk(item.units[0])
-            } else if (item.units.length > 1){
+            } else if (item.units && item.units.length > 1){
                 setUnits(item.units)  
             }
         }})
@@ -71,14 +70,13 @@ function NewReport() {
     const addExpense = (e) => {
     e.preventDefault()
     let obj = {
-        id,
+        id: Date.now(),
         name: itm,
         price,
         qty,
         unit: chk,
         arr: cat,
     }
-    let int = id + 1
     let t = total + (qty * price)
     setTotal(t)
     
@@ -88,7 +86,7 @@ function NewReport() {
         load: obj,
         
     })
-    setId(int)
+    
     clear('expense')
     }
 
@@ -128,8 +126,8 @@ function NewReport() {
             <form action="">
 
             {
-            state.labels &&
-            state.labels.map((obj) => (
+            state["labels-4.0"] &&
+            state["labels-4.0"].map((obj) => (
                 <Select>
                 <label htmlFor={obj.label}>{obj.label}</label>
                 <select className="form-select" name={obj.id} onChange={(e) => dispatch({type: "ADD-STRING", name: e.target.name, load: e.target.value})}>
@@ -152,8 +150,8 @@ function NewReport() {
             <option value="" defaultValue hidden>Choose here</option>
 
             {
-               state.expenses &&
-               state.expenses.map((obj) => (
+               state["expenses-4.0"] &&
+               state["expenses-4.0"].map((obj) => (
                 <option key={obj.label} value={obj.id}> {obj.label} </option>
                 ))
             }
@@ -235,7 +233,7 @@ function NewReport() {
 }
 
 const Main = styled.div`
-    width: 90%;
+    width: 95%;
     display: flex;
     justify-content: space-around;
 `

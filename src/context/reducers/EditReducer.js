@@ -26,6 +26,7 @@ export const editState = {
     truckingList: [],
     fuelList: [],
     insList: [],
+    misc: [],
 } 
 
 const editReducer = (state, action) => {
@@ -34,7 +35,7 @@ const editReducer = (state, action) => {
     switch(action.type) {
 
         case "ADD-STRING":
-            console.log(action)
+            // console.log(action)
             return (
                 {
                     ...state,
@@ -42,7 +43,7 @@ const editReducer = (state, action) => {
                 }
             )
         case "ADD-OBJ":
-            console.log(action)
+            // console.log(action)
             let arr = state[action.name]
             arr.push(action.load)
             return (

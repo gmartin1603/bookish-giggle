@@ -10,7 +10,7 @@ function EditReport() {
 
     const [state, dispatch] = useEditValue()
 
-    const [id, setId] = useState(1)
+    const [hide, setHide] = useState(true)
     const [optionList, setOptionList] = useState([])
     const [cat, setCat] = useState('')
     const [itm, setItm] = useState('')
@@ -29,7 +29,7 @@ function EditReport() {
         setUnit()
         setUnits()
   
-        state.expenses.map((item) => {
+        state["expenses-4.0"].map((item) => {
         if(item.id === e.target.value) {
             setOptionList(item.options)
 
@@ -44,13 +44,13 @@ function EditReport() {
     }
 
     useEffect(() => {
-        getData('expenses', dispatch)
-        console.log("Data Retrived")
+        getData('expenses-4.0', dispatch)
+        // console.log("Data Retrived")
       },[])
 
     const validate = () => {
         if ((cat && itm && chk !== '') && (qty && price > 0)) {
-            console.log("validated => true")
+            // console.log("validated => true")
             if (disa) {
                 setDisa(false)
             }
@@ -73,14 +73,13 @@ function EditReport() {
     const addExpense = (e) => {
         e.preventDefault()
         let obj = {
-            id,
+            id: Date.now(),
             name: itm,
             price,
             qty,
             unit: chk,
             arr: cat,
         }
-        let int = id + 1
         let t = total + (qty * price)
         setTotal(t)
         
@@ -90,7 +89,6 @@ function EditReport() {
             load: obj,
             
         })
-        setId(int)
         clear('expense')
         }
 
@@ -128,18 +126,19 @@ function EditReport() {
         <Main>
               <ReportSelect
                 setTotal={setTotal}
+                setHide={setHide}
               />
         <Content>
         <Container>
-            <form id="Expense" action="add seed" >
+            <form id="expense" action="add seed" hidden={hide} >
             <Select>
             <label htmlFor="Expense">Add Expense</label>
             <select className="form-select" name="expense"  onChange={(e) => handleChange(e)}>
             <option value="" defaultValue hidden>Choose here</option>
 
             {
-               state.expenses &&
-               state.expenses.map((obj) => (
+               state["expenses-4.0"] &&
+               state["expenses-4.0"].map((obj) => (
                 <option key={obj.label} value={obj.id}> {obj.label} </option>
                 ))
             }
@@ -211,6 +210,7 @@ function EditReport() {
             chemicals: state.chemList,
             fertilizer: state.fertList,
             fuel: state.fuelList,
+            misc: state.misc,
             trucking: state.truckingList,
             insurance: state.insList,}}
             total={total}

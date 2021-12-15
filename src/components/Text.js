@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styled from 'styled-components'
 import { writeReport } from '../data';
-import Item from './Item'
 import Row from './Row';
 
 function Text({removeItem, body, total, head,}) {
@@ -13,6 +12,7 @@ function Text({removeItem, body, total, head,}) {
 
         //build report object
         let obj = {
+            id: Date.now().toString(),
             landLord: head.ll, 
             seedList: body.seed, 
             crop: head.cp, 
@@ -22,6 +22,7 @@ function Text({removeItem, body, total, head,}) {
             fuelList: body.fuel, 
             truckingList: body.trucking,
             insList: body.insurance,
+            misc: body.misc,
             total
         }
         writeReport(obj)
@@ -63,7 +64,7 @@ function Text({removeItem, body, total, head,}) {
                 body && 
                 Object.keys(body).map((key) => {
                     
-                    if (body[key].length > 0) {
+                    if (body[key] && body[key].length > 0) {
                         let arr = body[key]
                         return (
                             <Row
@@ -109,6 +110,7 @@ const Container = styled.div`
     }
     @media print {
         width: 100%;
+        margin-left: 70px;
     }
 `
 

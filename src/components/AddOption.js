@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components'
 import { useAddValue } from '../context/providers/AddProvider';
-import { getData, writeData } from '../data';
+import { buildDoc, getData, writeData } from '../data';
 
 function AddOption(props) {
 
@@ -20,14 +20,19 @@ function AddOption(props) {
     const [dis, setDis] = useState(true)
     const [hide, setHide] = useState(true)
 
-    const units = ["Gal", "Lb", "Oz", "Ton", "Bu", "Mile", "Bag"]
+    const units = ["Gal", "Lb", "Oz", "Ton", "Bu", "Mile", "Bag", "Acre"]
 
     useEffect(() => {
-        getData("labels", dispatch)
-        getData("expenses", dispatch)
-      },[])
+        getData("labels-4.0", dispatch)
+        getData("expenses-4.0", dispatch)
+    },[])
 
-
+    const mkDoc = () => {
+        buildDoc("expenses-4.0", "misc", "Misc.", [])
+        // buildDoc("labels-4.0", "year", "Year", ["2019", "2020", "2021", "2022", "2023", "2024", "2025"])
+        // buildDoc("labels-4.0", "crop", "Crop", ["Corn", "Soy Beans"])
+        // buildDoc("labels-4.0", "landLord", "Land Lord", ["Elaine", "Kathleen", "Benson", "Martinson", "Larson", "Margret", "Bushman", "Metzer", "The 40", "Bermans", "Children"])
+    }
 
     const formatTxt = (str) => {
         if(str.length > 0) {
@@ -71,13 +76,13 @@ function AddOption(props) {
                 setText('')
             } else {
                 arr.push(load)
-                writeData(`${col}-4.0`, id, 'options', arr)
+                writeData(col, id, 'options', arr)
                 setHead(false)
                 setExp(false)   
             }   
         }
         if (asU) {
-            writeData(`${col}-4.0`, id, 'units', unt)
+            writeData(col, id, 'units', unt)
             setAsU(false)
             setUnt([])
         }
@@ -100,16 +105,16 @@ function AddOption(props) {
         if(head || exp || asU) {
             if(head) {
                 setTitle("Add Heading Option"); 
-                setCol("labels");    
+                setCol("labels-4.0");    
     
             }
             if(exp) {
                 setTitle("Add Expenses Option")
-                setCol("expenses")
+                setCol("expenses-4.0")
             }
             if (asU) {
                 setTitle("Assign Units to Category")
-                setCol("expenses")
+                setCol("expenses-4.0")
 
             }
             
@@ -182,6 +187,7 @@ function AddOption(props) {
                     <button class="btn btn-outline-primary" type="submit" hidden={hide} onClick={(e) => handleSubmit(e)}>ADD</button>
 
             </form>
+            {/* <button onClick={() => mkDoc()}>Make Doc</button> */}
                 </Select>
         </Container>
     );
