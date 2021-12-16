@@ -16,74 +16,59 @@ export const db = firebase.firestore();
 export const auth = firebase.auth();
 
 export const getData = (coll, func) => {
+    let arr = []
     db.collection(coll).get()
     .then((snapshot) => {
-        snapshot.forEach((docs) => {
-            switch (coll) {
-                case "labels":
-                    func(docs.data().expenses)
-                    break
-                case "expenses":
-                    func(docs.data().expenses)
-                    break
-                default:
-                    return
-            }
+        snapshot.forEach((doc) => {
+            // console.log(doc.data())
+            arr.push(doc.data())
+            return (
+                func({
+                    type: "ADD-ARR",
+                    name: coll,
+                    load: arr,
+                })
+            )
         })
     })
 }
 
-export const writeData = (coll, exp, expenses) => {
+export const buildDoc = (coll, doc, label, options ) => {
+    db.collection(coll).doc(doc).set({
+        id: doc,
+        label: label,
+        options: options          
+    }, {merge: true})
+}
+
+export const writeData = (coll, doc, key, load) => {
     
-    if (coll === 'expenses') {
-        if (exp) {
-            let array = expenses
-            array.push(exp)
-        }
-        db.collection(coll).doc('8CJ5sBDg05YAVjow0HUW').set({
-            expenses
-            
-        })
-    } else {
-        db.collection(coll).doc('4awrazQ0r23HC8hoEUfO').set({
-            expenses
-            
-        })
-    }
+        db.collection(coll).doc(doc).set({
+            [key]: load            
+        }, {merge: true}) 
+    
 }
 
 export const writeReport = (report) => {
-    db.collection("reports").doc(`${report.landLord} ${report.year}`).set(report)
+    db.collection("reports").doc(`${report.landLord} ${report.crop} ${report.year}`).set(report)
     .then(() => {
         alert("Report saved to database")
     })
 }
 
-export const getReports = (func) => {
+export const getReports = (dispatch) => {
     let arr = []
     db.collection("reports").get().then((snapshot) => {
         snapshot.forEach((doc) => {
             // console.log(doc.data())
             arr.push(doc.data())
             return (
-                func(arr)
+                dispatch({
+                    type: "ADD-ARR",
+                    name: "reports",
+                    load: arr,
+                })
             )
         })
-    })
-}
-
-export const getReport = (doc, setChemList, setCrop, setFertList, setFuelList, setLandLord,setYear, setSeedList, setTruckingList, setTotal) => {
-    db.collection("reports").doc(doc).get()
-    .then((snapshot) => {
-        let obj = snapshot.data()
-        setLandLord(obj.landLord)
-        setYear(obj.year)
-        setCrop(obj.crop)
-        setSeedList(obj.seedList)
-        setTruckingList(obj.truckingList)
-        setFertList(obj.fertList)
-        setChemList(obj.chemList)
-        setFuelList(obj.fuelList)
-        setTotal(obj.total)
     })
 }

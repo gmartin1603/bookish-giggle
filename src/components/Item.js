@@ -1,7 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components'
 
-function Item({obj, list, state, removeItem}) {
+function Item({obj, removeItem}) {
+
+    
+
+    // useEffect(() => {
+    //    console.log(obj)
+    // })
+
     return (
         <Container className="row justify-content-center">
             <div className="col-2">
@@ -22,7 +29,7 @@ function Item({obj, list, state, removeItem}) {
                 <p><b>Total:</b> ${(obj.price * obj.qty).toFixed(2)}</p>
             </div>
             <div id="button" className="col">
-            <button className="btn btn-outline-danger" onClick={() => removeItem(list, 'id', obj.id, state)}>Delete</button>
+            <button className="btn btn-outline-danger" onClick={() => removeItem(obj.arr, 'id', obj.id)}>Delete</button>
             </div>
         </Container>
     );
