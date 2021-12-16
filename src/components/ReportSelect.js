@@ -12,8 +12,17 @@ function ReportSelect({setTotal, setHide}) {
         // console.log(state)
     },[])
 
+    const clearContext = () => {
+        
+        dispatch({
+            type: 'RESET',
+        })
+        setTotal(0)
+    }
+
     const handleChange = (e) => {
         e.preventDefault()
+        clearContext()
         let arr = state.reports
         let attr = "id"
         let i = arr.length
@@ -51,6 +60,7 @@ function ReportSelect({setTotal, setHide}) {
 
     return (
         <Container> 
+            {/* <button onClick={clearContext}>Clear Context</button> */}
             <select className="form-select" onChange={(e) => handleChange(e)} >
                 <option value="" defaultValue hidden>Choose a report to view</option>
                 {

@@ -26,6 +26,7 @@ export const newState = {
     truckingList: [],
     fuelList: [],
     insList: [],
+    misc: [],
 }
 
 // export const textObj = {

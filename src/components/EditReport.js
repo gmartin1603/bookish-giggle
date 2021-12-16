@@ -112,14 +112,47 @@ function EditReport() {
             }
             // update context store
             dispatch({
-                type: 'UPDATE',
+                type: 'ADD-ARR',
                 name: arr,
                 load: array,
             })
         }
-    
+        
         useEffect(() => {
+
             validate()
+            
+            // let t = 0
+            // state.seedList.length > 0 &&
+            // state.seedList.map((obj) => (
+            //     t = t + (obj.price * obj.qty)
+            // ))
+            // state.fertList.length > 0 &&
+            // state.fertList.map((obj) => (
+            //     t = t + (obj.price * obj.qty)
+            // ))
+            // state.chemList.length > 0 &&
+            // state.chemList.map((obj) => (
+            //     t = t + (obj.price * obj.qty)
+            // ))
+            // state.fuelList.length > 0 &&
+            // state.fuelList.map((obj) => (
+            //     t = t + (obj.price * obj.qty)
+            // ))
+            // state.truckingList.length > 0 &&
+            // state.truckingList.map((obj) => (
+            //     t = t + (obj.price * obj.qty)
+            // ))
+            // // state.insList.length > 0 &&
+            // // state.insList.map((obj) => (
+            // //     t = t + (obj.price * obj.qty)
+            // // ))
+            // // state.misc.length > 0 &&
+            // // state.misc.map((obj) => (
+            // //     t = t + (obj.price * obj.qty)
+            // // ))
+            // setTotal(t)
+            
         })
 
     return (

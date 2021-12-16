@@ -9,10 +9,10 @@ function Text({removeItem, body, total, head,}) {
     
     
     const saveReport = () => {
-
+        let id = Date.now().toString()
         //build report object
         let obj = {
-            id: Date.now().toString(),
+            id,
             landLord: head.ll, 
             seedList: body.seed, 
             crop: head.cp, 
@@ -28,31 +28,6 @@ function Text({removeItem, body, total, head,}) {
         writeReport(obj)
     }
 
-    // useEffect(() => {
-    //     let t = 0
-    //     seedList.length > 0 &&
-    //     seedList.map((obj) => (
-    //         t = t + (obj.price * obj.qty)
-    //     ))
-    //     fertList.length > 0 &&
-    //     fertList.map((obj) => (
-    //         t = t + (obj.price * obj.qty)
-    //     ))
-    //     chemList.length > 0 &&
-    //     chemList.map((obj) => (
-    //         t = t + (obj.price * obj.qty)
-    //     ))
-    //     fuelList.length > 0 &&
-    //     fuelList.map((obj) => (
-    //         t = t + (obj.price * obj.qty)
-    //     ))
-    //     truckingList.length > 0 &&
-    //     truckingList.map((obj) => (
-    //         t = t + (obj.price * obj.qty)
-    //     ))
-    //     setTotal(t)
-        
-    // })
 
     return (
         <Container>

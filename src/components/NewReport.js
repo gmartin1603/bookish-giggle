@@ -224,7 +224,8 @@ function NewReport() {
             fertilizer: state.fertList,
             fuel: state.fuelList,
             trucking: state.truckingList,
-            insurance: state.insList,}}
+            insurance: state.insList,
+            misc: state.misc}}
             total={total}
             removeItem= {removeItem}
         />

@@ -45,7 +45,7 @@ export const writeData = (coll, doc, key, load) => {
     
         db.collection(coll).doc(doc).set({
             [key]: load            
-        }, {merge: true})
+        }, {merge: true}) 
     
 }
 
