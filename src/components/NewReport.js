@@ -25,6 +25,16 @@ function NewReport() {
         console.log("Data Retrived")
       },[])
 
+    // Wipes context state
+    const clearContext = () => {
+        
+        dispatch({
+            type: 'RESET',
+        })
+        setTotal(0)
+        document.getElementById("heading").reset()
+    }
+
     const validate = () => {
         if ((cat && itm && chk !== '') && (qty && price > 0)) {
             console.log("validated => true")
@@ -228,6 +238,7 @@ function NewReport() {
             misc: state.misc}}
             total={total}
             removeItem= {removeItem}
+            clearContext= {clearContext}
         />
         </Main>
     );
