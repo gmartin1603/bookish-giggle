@@ -133,7 +133,7 @@ function NewReport() {
     return (
         <Main>
         <Container>
-            <form action="">
+            <form action="" id="heading">
 
             {
             state["labels-4.0"] &&

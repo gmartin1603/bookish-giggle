@@ -81,7 +81,17 @@ const newReducer = (state, action) => {
         
         case "RESET":
             return (
-                action.load
+                { ...state,
+                    landLord: "",
+                    crop: "",
+                    year: "",
+                    seedList: [],
+                    chemList: [],
+                    fertList: [],
+                    truckingList: [],
+                    fuelList: [],
+                    insList: [],
+                    misc: [],}
             )
         default: 
             console.log("No Form State Change")
