@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { writeReport } from '../data';
 import Row from './Row';
 
-function Text({removeItem, body, total, head,}) {
+function Text({clearContext, removeItem, body, total, head,}) {
     
 
     
@@ -66,8 +66,9 @@ function Text({removeItem, body, total, head,}) {
             {
                 head.ll && head.cp && head.yr !== '' ?
                 <Buttons>
-                    <button class="btn btn-outline-success" onClick={() => saveReport()}>Save</button>
-                    <button class="btn btn-outline-primary" onClick={() => window.print()}>Print</button>
+                    <button class="btn btn-success" onClick={() => saveReport()}>Save</button>
+                    <button class="btn btn-primary" onClick={() => window.print()}>Print</button>
+                    <button class="btn btn-danger" onClick={() => clearContext()}>Clear Sheet</button>
                 </Buttons>
                 :
                 ''
@@ -93,6 +94,9 @@ const Header = styled.div`
   text-align: center;
 `
 const Buttons = styled.div`
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
     @media print {
         display: none;
     }
