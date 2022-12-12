@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components'
+import { useAppState } from '../context/app state/AppProvider';
 import { useNewValue } from '../context/providers/NewProvider';
 import { getData } from '../data';
+import SideBar from './SideBar';
 import Text from './Text';
 
 function NewReport() {
 
-    const [state, dispatch] = useNewValue()
+    const [state, dispatch] = useAppState()
 
     const [optionList, setOptionList] = useState([])
     const [cat, setCat] = useState('')
@@ -20,6 +22,10 @@ function NewReport() {
     const [total, setTotal] = useState(0)
 
     useEffect(() => {
+        console.log(state)
+    }, [state]);
+
+    useEffect(() => {
         getData('labels-4.0', dispatch)
         getData('expenses-4.0', dispatch)
         console.log("Data Retrived")
@@ -27,7 +33,7 @@ function NewReport() {
 
     // Wipes context state
     const clearContext = () => {
-        
+
         dispatch({
             type: 'RESET',
         })
@@ -62,7 +68,7 @@ function NewReport() {
         setItm('')
         setUnit()
         setUnits()
-  
+
         state["expenses-4.0"].map((item) => {
         if(item.id === e.target.value) {
             setOptionList(item.options)
@@ -72,7 +78,7 @@ function NewReport() {
                 setUnit(item.units[0])
                 setChk(item.units[0])
             } else if (item.units && item.units.length > 1){
-                setUnits(item.units)  
+                setUnits(item.units)
             }
         }})
     }
@@ -89,14 +95,14 @@ function NewReport() {
     }
     let t = total + (qty * price)
     setTotal(t)
-    
+
     dispatch({
         type: "ADD-OBJ",
         name: cat,
         load: obj,
-        
+
     })
-    
+
     clear('expense')
     }
 
@@ -116,7 +122,7 @@ function NewReport() {
             // new array with target obj removed
             array.splice(0, 0, a[i])
             console.log(array)
-            }      
+            }
         }
         // update context store
         dispatch({
@@ -134,24 +140,7 @@ function NewReport() {
         <Main>
         <Container>
             <form action="" id="heading">
-
-            {
-            state["labels-4.0"] &&
-            state["labels-4.0"].map((obj) => (
-                <Select>
-                <label htmlFor={obj.label}>{obj.label}</label>
-                <select className="form-select" name={obj.id} onChange={(e) => dispatch({type: "ADD-STRING", name: e.target.name, load: e.target.value})}>
-                <option value="" defaultValue hidden >Choose here</option>
-                    {
-                    obj.options && 
-                    obj.options.map((option) => (
-                        <option value={option}>{option}</option>
-                        ))
-                    }
-                </select>
-                </Select>
-            ))
-            }
+                <SideBar/>
             </form>
             <form id="expense" action="add" >
             <Select>
@@ -168,17 +157,17 @@ function NewReport() {
             </select>
             {
                 optionList.length > 0 &&
-                 cat !== '' ?  
-                
+                 cat !== '' ?
+
                 // <label for="expense">Add Expense</label>
                 <select className="form-select" name={cat} onChange={(e) => setItm(e.target.value)}>
                         <option value="" defaultValue hidden>Choose here</option>
-                    {        
-                        
+                    {
+
                         optionList.map((o) => (
                             <option key={o} value={o} >{o}</option>
                         ))
-                        
+
                     }
                 </select>
                   :
@@ -187,7 +176,7 @@ function NewReport() {
 
             {
                 units && cat?
-                <Check>    
+                <Check>
                     <label htmlFor="qty">Unit of Measure</label>
                     <ul>
                     {
@@ -295,7 +284,7 @@ const Check = styled.div`
                 margin-left: 10px;
             }
         }
-        
+
     }
     div {
         display: flex;
@@ -305,9 +294,9 @@ const Check = styled.div`
         input {
             margin-top: 10px;
             margin-left: 10px;
-            
+
         }
-        
+
     }
 `
 

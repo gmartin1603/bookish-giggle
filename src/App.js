@@ -42,9 +42,9 @@ function App() {
   const addOption = (arr, attr, value, additon, func) => {
     let i = arr.length
     while (i--) {
-      if(arr[i] 
-        && arr[i].hasOwnProperty(attr) 
-        && arr[i][attr] === value){ 
+      if(arr[i]
+        && arr[i].hasOwnProperty(attr)
+        && arr[i][attr] === value){
          arr[i]["options"].push(additon)
          console.log(arr)
          return (
@@ -52,14 +52,14 @@ function App() {
          )
        }
     }
-  } 
+  }
 
   const addNewLabel = (e) => {
     e.preventDefault()
     addOption(labels, 'label', label, newLabel, setLabels)
     writeData('labels', null, labels)
     document.getElementById('add__new__label').reset()
-  } 
+  }
 
   const addNewExpense = (e) => {
     e.preventDefault()
@@ -80,16 +80,16 @@ function App() {
     }
   }
 
- 
 
- 
+
+
 
   return (
     <Router>
         {
-          user? 
+          user?
       <Container className="app">
-        
+
         <Header setUser={setUser}/>
           <Switch>
             <Route path="/Add">
@@ -103,9 +103,7 @@ function App() {
               </EditProvider>
             </Route>
             <Route path="/">
-              <NewProvider initialState={newState} reducer={newReducer}>
-                <NewReport/> 
-              </NewProvider>
+                <NewReport/>
             </Route>
           </Switch>
       </Container>
