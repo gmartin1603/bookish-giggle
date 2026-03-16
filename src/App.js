@@ -1,11 +1,9 @@
-import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
-import NewReport from "./components/NewReport";
-import Header from "./components/Header";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { useEffect, useState } from "react";
-import {getData, writeData, getReports, auth} from './data'
-import Text from "./components/Text";
-import styled from 'styled-components'
-import ReportSelect from "./components/ReportSelect";
+import styled from "styled-components";
+import { auth } from "./data";
+import Header from "./components/Header";
+import NewReport from "./components/NewReport";
 import EditReport from "./components/EditReport";
 import AddOption from "./components/AddOption";
 import Login from "./components/Login";
@@ -16,111 +14,95 @@ import editReducer, { editState } from "./context/reducers/EditReducer";
 import { AddProvider } from "./context/providers/AddProvider";
 import addReducer, { addState } from "./context/reducers/AddReducer";
 
-
 function App() {
-  const [labels, setLabels] = useState('')
-  const [expenses, setExpenses] = useState('')
-  const [newOption, setNewOption] = useState('')
-  const [expense, setExpense] = useState('')
-  const [newExpense, setNewExpense] = useState('')
-  const [newLabel, setNewLabel] = useState('')
-  const [label, setLabel] = useState('')
-  const [total, setTotal] = useState(0)
-  const [reports, setReports] = useState([])
-  const [user, setUser] = useState('')
+  const [user, setUser] = useState("");
 
-  auth.onAuthStateChanged((user) => {
-    user && setUser(user.email)
-  })
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((nextUser) => {
+      setUser(nextUser ? nextUser.email : "");
+    });
 
-  // useEffect(() => {
-  //   getData('labels', setLabels)
-  //   getData('expenses', setExpenses)
-  //   getReports(setReports)
-  // },[])
-
-  const addOption = (arr, attr, value, additon, func) => {
-    let i = arr.length
-    while (i--) {
-      if(arr[i] 
-        && arr[i].hasOwnProperty(attr) 
-        && arr[i][attr] === value){ 
-         arr[i]["options"].push(additon)
-         console.log(arr)
-         return (
-           func(arr)
-         )
-       }
-    }
-  } 
-
-  const addNewLabel = (e) => {
-    e.preventDefault()
-    addOption(labels, 'label', label, newLabel, setLabels)
-    writeData('labels', null, labels)
-    document.getElementById('add__new__label').reset()
-  } 
-
-  const addNewExpense = (e) => {
-    e.preventDefault()
-    if (newExpense) {
-
-      let obj = {
-        label: newExpense,
-        dispatch: 'SET_EXP',
-        options: []
+    return () => {
+      if (typeof unsubscribe === "function") {
+        unsubscribe();
       }
-      writeData('expenses', obj, expenses)
-      document.getElementById('add__new').reset()
-    } else {
-      addOption(expenses, "label", expense, newOption, setExpenses)
-      console.log(expense)
-      writeData('expenses', null, expenses)
-      document.getElementById('add__new').reset()
-    }
-  }
-
- 
-
- 
+    };
+  }, []);
 
   return (
     <Router>
-        {
-          user? 
-      <Container className="app">
-        
-        <Header setUser={setUser}/>
-          <Switch>
-            <Route path="/Add">
-              <AddProvider initialState={addState} reducer={addReducer} >
-              <AddOption/>
-              </AddProvider>
-            </Route>
-            <Route path="/View">
-              <EditProvider initialState={editState} reducer={editReducer}>
-              <EditReport/>
-              </EditProvider>
-            </Route>
-            <Route path="/">
-              <NewProvider initialState={newState} reducer={newReducer}>
-                <NewReport/> 
-              </NewProvider>
-            </Route>
-          </Switch>
-      </Container>
-          :
-          <Login/>
-        }
+      {user ? (
+        <Shell>
+          <AmbientGlow />
+          <Header setUser={setUser} user={user} />
+          <MainContent>
+            <Switch>
+              <Route path="/Add">
+                <AddProvider initialState={addState} reducer={addReducer}>
+                  <AddOption />
+                </AddProvider>
+              </Route>
+              <Route path="/View">
+                <EditProvider initialState={editState} reducer={editReducer}>
+                  <EditReport />
+                </EditProvider>
+              </Route>
+              <Route path="/">
+                <NewProvider initialState={newState} reducer={newReducer}>
+                  <NewReport />
+                </NewProvider>
+              </Route>
+            </Switch>
+          </MainContent>
+        </Shell>
+      ) : (
+        <Login />
+      )}
     </Router>
   );
 }
 
-const Container = styled.div`
-  width: 100vw;
-`
+const Shell = styled.div`
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+`;
 
+const AmbientGlow = styled.div`
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at top left, rgba(232, 157, 83, 0.18), transparent 34%),
+    radial-gradient(circle at top right, rgba(64, 107, 79, 0.16), transparent 28%),
+    radial-gradient(circle at bottom center, rgba(211, 184, 136, 0.18), transparent 38%);
+  pointer-events: none;
+  z-index: 0;
 
+  @media print {
+    display: none;
+  }
+`;
 
+const MainContent = styled.main`
+  position: relative;
+  z-index: 1;
+  width: min(1240px, calc(100vw - 32px));
+  margin: 0 auto;
+  padding: 20px 0 32px;
+
+  @media (max-width: 1100px) {
+    padding: 16px 0 24px;
+  }
+
+  @media (max-width: 720px) {
+    width: min(100vw - 20px, 1240px);
+    padding: 14px 0 20px;
+  }
+
+  @media print {
+    width: 100%;
+    padding: 0;
+  }
+`;
 
 export default App;

@@ -1,314 +1,743 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components'
+import styled from 'styled-components';
 import { useNewValue } from '../context/providers/NewProvider';
 import { getData } from '../data';
 import Text from './Text';
 
 function NewReport() {
+  const [state, dispatch] = useNewValue();
 
-    const [state, dispatch] = useNewValue()
+  const [optionList, setOptionList] = useState([]);
+  const [cat, setCat] = useState('');
+  const [itm, setItm] = useState('');
+  const [price, setPrice] = useState('');
+  const [chk, setChk] = useState('');
+  const [qty, setQty] = useState('');
+  const [disa, setDisa] = useState(true);
+  const [units, setUnits] = useState([]);
+  const [unit, setUnit] = useState('');
+  const [total, setTotal] = useState(0);
+  const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
 
-    const [optionList, setOptionList] = useState([])
-    const [cat, setCat] = useState('')
-    const [itm, setItm] = useState('')
-    const [price, setPrice] = useState(0)
-    const [chk, setChk] = useState('')
-    const [qty, setQty] = useState(0)
-    const [disa, setDisa] = useState(true)
-    const [units, setUnits] = useState()
-    const [unit, setUnit] = useState()
-    const [total, setTotal] = useState(0)
+  useEffect(() => {
+    getData('labels-4.0', dispatch);
+    getData('expenses-4.0', dispatch);
+  }, [dispatch]);
 
-    useEffect(() => {
-        getData('labels-4.0', dispatch)
-        getData('expenses-4.0', dispatch)
-        console.log("Data Retrived")
-      },[])
+  useEffect(() => {
+    const canAdd = Boolean(cat && itm && chk && Number(qty) > 0 && Number(price) > 0);
+    setDisa(!canAdd);
+  }, [cat, itm, chk, qty, price]);
 
-    // Wipes context state
-    const clearContext = () => {
-        
-        dispatch({
-            type: 'RESET',
-        })
-        setTotal(0)
-        document.getElementById("heading").reset()
-    }
+  const clearLocalExpenseState = () => {
+    setOptionList([]);
+    setCat('');
+    setItm('');
+    setPrice('');
+    setQty('');
+    setChk('');
+    setUnits([]);
+    setUnit('');
+    setDisa(true);
+  };
 
-    const validate = () => {
-        if ((cat && itm && chk !== '') && (qty && price > 0)) {
-            console.log("validated => true")
-            if (disa) {
-                setDisa(false)
-            }
-        } else {
-            if (!disa) {
-                setDisa(true)
-            }
-        }
-    }
-
-    const clear = (ele) => {
-        document.getElementById(ele).reset()
-        setCat('')
-        setItm('')
-        setPrice(0)
-        setQty(0)
-        setDisa(true)
-    }
-
-    const handleChange = (e) => {
-        setCat(e.target.value)
-        setItm('')
-        setUnit()
-        setUnits()
-  
-        state["expenses-4.0"].map((item) => {
-        if(item.id === e.target.value) {
-            setOptionList(item.options)
-
-            if(item.units && item.units.length === 1) {
-                // auto selects unit if only one option exists
-                setUnit(item.units[0])
-                setChk(item.units[0])
-            } else if (item.units && item.units.length > 1){
-                setUnits(item.units)  
-            }
-        }})
-    }
-
-    const addExpense = (e) => {
-    e.preventDefault()
-    let obj = {
-        id: Date.now(),
-        name: itm,
-        price,
-        qty,
-        unit: chk,
-        arr: cat,
-    }
-    let t = total + (qty * price)
-    setTotal(t)
-    
+  const clearContext = () => {
     dispatch({
-        type: "ADD-OBJ",
-        name: cat,
-        load: obj,
-        
-    })
-    
-    clear('expense')
+      type: 'RESET',
+    });
+    setTotal(0);
+    setIsExpenseModalOpen(false);
+    clearLocalExpenseState();
+
+    const headingForm = document.getElementById('heading');
+    const expenseForm = document.getElementById('expense');
+
+    if (headingForm) {
+      headingForm.reset();
     }
 
-    const removeItem = (arr, attr, value) => {
-        // console.log(attr)
-        let a = state[arr]
-        let i = a.length;
-        let array = []
-        while(i--){
-            if(a[i] && a[i].hasOwnProperty(attr) && a[i][attr] === value){
-                //  remove quantity * price from total
-                let q = a[i]["qty"]
-                let p = a[i]["price"]
-                let t = total - (q * p)
-                setTotal(t)
-            }else{
-            // new array with target obj removed
-            array.splice(0, 0, a[i])
-            console.log(array)
-            }      
-        }
-        // update context store
-        dispatch({
-            type: 'UPDATE',
-            name: arr,
-            load: array,
-        })
+    if (expenseForm) {
+      expenseForm.reset();
+    }
+  };
+
+  const clearExpenseForm = () => {
+    const expenseForm = document.getElementById('expense');
+
+    if (expenseForm) {
+      expenseForm.reset();
     }
 
-    useEffect(() => {
-        validate()
-    })
+    clearLocalExpenseState();
+  };
 
-    return (
-        <Main>
-        <Container>
-            <form action="" id="heading">
+  const handleChange = (event) => {
+    const value = event.target.value;
+    const selectedExpense = (state['expenses-4.0'] || []).find((item) => item.id === value);
 
-            {
-            state["labels-4.0"] &&
-            state["labels-4.0"].map((obj) => (
-                <Select>
-                <label htmlFor={obj.label}>{obj.label}</label>
-                <select className="form-select" name={obj.id} onChange={(e) => dispatch({type: "ADD-STRING", name: e.target.name, load: e.target.value})}>
-                <option value="" defaultValue hidden >Choose here</option>
-                    {
-                    obj.options && 
-                    obj.options.map((option) => (
-                        <option value={option}>{option}</option>
-                        ))
+    setCat(value);
+    setItm('');
+    setChk('');
+    setUnit('');
+    setUnits([]);
+    setOptionList(selectedExpense?.options || []);
+
+    if (selectedExpense?.units?.length === 1) {
+      setUnit(selectedExpense.units[0]);
+      setChk(selectedExpense.units[0]);
+      return;
+    }
+
+    if (selectedExpense?.units?.length > 1) {
+      setUnits(selectedExpense.units);
+    }
+  };
+
+  const addExpense = (event) => {
+    event.preventDefault();
+
+    const numericPrice = Number(price);
+    const numericQty = Number(qty);
+    const obj = {
+      id: Date.now(),
+      name: itm,
+      price: numericPrice,
+      qty: numericQty,
+      unit: chk,
+      arr: cat,
+    };
+
+    setTotal((currentTotal) => currentTotal + numericQty * numericPrice);
+
+    dispatch({
+      type: 'ADD-OBJ',
+      name: cat,
+      load: obj,
+    });
+
+    clearExpenseForm();
+    setIsExpenseModalOpen(false);
+  };
+
+  const removeItem = (arr, attr, value) => {
+    const source = state[arr] || [];
+    let nextTotal = total;
+    const nextArray = [];
+
+    for (let index = source.length - 1; index >= 0; index -= 1) {
+      const item = source[index];
+
+      if (item && Object.prototype.hasOwnProperty.call(item, attr) && item[attr] === value) {
+        nextTotal -= Number(item.qty) * Number(item.price);
+      } else {
+        nextArray.splice(0, 0, item);
+      }
+    }
+
+    setTotal(nextTotal);
+    dispatch({
+      type: 'UPDATE',
+      name: arr,
+      load: nextArray,
+    });
+  };
+
+  return (
+    <Page>
+      <PageHeader>
+        <Eyebrow>Create a report</Eyebrow>
+        <Title>Build this season's expense summary.</Title>
+        <Description>
+          Fill in the heading, add expense lines, and keep a live preview ready for printing or saving.
+        </Description>
+      </PageHeader>
+
+      <Layout>
+        <Sidebar>
+          <Card>
+            <CardHeader>
+              <CardTitle>Report Details</CardTitle>
+              <CardText>Choose the landlord, crop, and year before you save the report.</CardText>
+            </CardHeader>
+
+            <Form id="heading">
+              {(state['labels-4.0'] || []).map((obj) => (
+                <Field key={obj.id} $span={1}>
+                  <label htmlFor={obj.id}>{obj.label}</label>
+                  <select
+                    id={obj.id}
+                    name={obj.id}
+                    onChange={(event) =>
+                      dispatch({
+                        type: 'ADD-STRING',
+                        name: event.target.name,
+                        load: event.target.value,
+                      })
                     }
-                </select>
-                </Select>
-            ))
-            }
-            </form>
-            <form id="expense" action="add" >
-            <Select>
-            <label htmlFor="Expense">Add Expense</label>
-            <select className="form-select" name="expense"  onChange={(e) => handleChange(e)}>
-            <option value="" defaultValue hidden>Choose here</option>
+                    defaultValue=""
+                  >
+                    <option value="" disabled>
+                      Choose here
+                    </option>
+                    {(obj.options || []).map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+              ))}
+            </Form>
+          </Card>
 
-            {
-               state["expenses-4.0"] &&
-               state["expenses-4.0"].map((obj) => (
-                <option key={obj.label} value={obj.id}> {obj.label} </option>
-                ))
-            }
-            </select>
-            {
-                optionList.length > 0 &&
-                 cat !== '' ?  
-                
-                // <label for="expense">Add Expense</label>
-                <select className="form-select" name={cat} onChange={(e) => setItm(e.target.value)}>
-                        <option value="" defaultValue hidden>Choose here</option>
-                    {        
-                        
-                        optionList.map((o) => (
-                            <option key={o} value={o} >{o}</option>
-                        ))
-                        
-                    }
-                </select>
-                  :
-                  ''
-            }
+          <Card>
+            <CardHeader>
+              <CardTitle>Add Expense</CardTitle>
+              <CardText>Pick a category, select the item, then enter units, quantity, and price.</CardText>
+            </CardHeader>
 
-            {
-                units && cat?
-                <Check>    
-                    <label htmlFor="qty">Unit of Measure</label>
-                    <ul>
-                    {
-                        units.map((uni) => (
-                            <li>
-                                <label for={uni}> {uni} </label>
-                                <input name={uni} type="checkbox" value={uni} onChange={(e) => setChk(e.target.value)} />
-                            </li>
-                        ))
-                    }
-                    </ul>
-                </Check>
-                :
-                ''
-            }
-            {
-                unit && cat ?
-                <Check>
-                    <label htmlFor="qty">Unit of Measure</label>
-                    <div>
-                        <label for={unit}>{unit}</label>
-                        <input name={unit} type="checkbox" checked={true} value={unit}/>
-                    </div>
-                </Check>
-                    :
-                    ''
-            }
+            <CompactRow>
+              <TriggerButton type="button" onClick={() => setIsExpenseModalOpen(true)}>
+                Add Expense Line
+              </TriggerButton>
+              <CompactHint>
+                Open a focused form for category, unit, quantity, and price.
+              </CompactHint>
+            </CompactRow>
+          </Card>
+        </Sidebar>
 
-            <label htmlFor="qty">Quantity</label>
-            <input className="form-control" placeholder="QTY" name="qty" type="number" onChange={(e) => setQty(e.target.value)}/>
-            <label htmlFor="price">Price Per Unit</label>
-            <input className="form-control" placeholder="Price" name="price" type="number" onChange={(e) => setPrice(e.target.value)}/>
-            <button class="btn btn-outline-primary" disabled={disa} type="submit" onClick={(e) => addExpense(e)}>ADD</button>
-            </Select>
-            </form>
-        </Container>
-        <Text
-            head={{ll: state.landLord,
-                yr: state.year,
-                cp: state.crop,}}
+        <PreviewColumn>
+          <Text
+            head={{
+              ll: state.landLord,
+              yr: state.year,
+              cp: state.crop,
+            }}
             body={{
-            seed: state.seedList,
-            chemicals: state.chemList,
-            fertilizer: state.fertList,
-            fuel: state.fuelList,
-            trucking: state.truckingList,
-            insurance: state.insList,
-            misc: state.misc}}
+              seed: state.seedList,
+              chemicals: state.chemList,
+              fertilizer: state.fertList,
+              fuel: state.fuelList,
+              trucking: state.truckingList,
+              insurance: state.insList,
+              misc: state.misc,
+            }}
             total={total}
-            removeItem= {removeItem}
-            clearContext= {clearContext}
-        />
-        </Main>
-    );
+            removeItem={removeItem}
+            clearContext={clearContext}
+          />
+        </PreviewColumn>
+      </Layout>
+
+      {isExpenseModalOpen ? (
+        <ModalOverlay role="presentation" onClick={() => setIsExpenseModalOpen(false)}>
+          <ModalCard role="dialog" aria-modal="true" aria-labelledby="new-expense-modal" onClick={(event) => event.stopPropagation()}>
+            <ModalHeader>
+              <div>
+                <ModalTitle id="new-expense-modal">Add Expense</ModalTitle>
+                <ModalText>Choose the category, item, unit, quantity, and rate for this line.</ModalText>
+              </div>
+              <CloseButton type="button" onClick={() => setIsExpenseModalOpen(false)}>
+                Close
+              </CloseButton>
+            </ModalHeader>
+
+            <Form id="expense" onSubmit={addExpense}>
+              <Field $span={1}>
+                <label htmlFor="expense-category">Expense Category</label>
+                <select id="expense-category" name="expense" onChange={handleChange} defaultValue="">
+                  <option value="" disabled>
+                    Choose here
+                  </option>
+                  {(state['expenses-4.0'] || []).map((obj) => (
+                    <option key={obj.id} value={obj.id}>
+                      {obj.label}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+
+              {optionList.length > 0 && cat ? (
+                <Field $span={1}>
+                  <label htmlFor="expense-item">Expense Item</label>
+                  <select
+                    id="expense-item"
+                    name={cat}
+                    onChange={(event) => setItm(event.target.value)}
+                    defaultValue=""
+                  >
+                    <option value="" disabled>
+                      Choose here
+                    </option>
+                    {optionList.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+              ) : null}
+
+              {units.length > 0 && cat ? (
+                <Field $span={2}>
+                  <label>Unit of Measure</label>
+                  <ChoiceGrid>
+                    {units.map((nextUnit) => {
+                      const inputId = `new-unit-${nextUnit}`;
+
+                      return (
+                        <ChoiceLabel key={nextUnit} htmlFor={inputId}>
+                          <input
+                            id={inputId}
+                            type="radio"
+                            name="expense-unit"
+                            value={nextUnit}
+                            checked={chk === nextUnit}
+                            onChange={(event) => setChk(event.target.value)}
+                          />
+                          <span>{nextUnit}</span>
+                        </ChoiceLabel>
+                      );
+                    })}
+                  </ChoiceGrid>
+                </Field>
+              ) : null}
+
+              {unit && cat ? (
+                <Field $span={2}>
+                  <label>Unit of Measure</label>
+                  <StaticChoice>{unit}</StaticChoice>
+                </Field>
+              ) : null}
+
+              <InlineFields>
+                <Field>
+                  <label htmlFor="qty">Quantity</label>
+                  <input
+                    id="qty"
+                    placeholder="QTY"
+                    name="qty"
+                    type="number"
+                    min="0"
+                    step="any"
+                    value={qty}
+                    onChange={(event) => setQty(event.target.value)}
+                  />
+                </Field>
+
+                <Field>
+                  <label htmlFor="price">Price Per Unit</label>
+                  <input
+                    id="price"
+                    placeholder="Price"
+                    name="price"
+                    type="number"
+                    min="0"
+                    step="any"
+                    value={price}
+                    onChange={(event) => setPrice(event.target.value)}
+                  />
+                </Field>
+              </InlineFields>
+
+              <SubmitButton type="submit" disabled={disa}>
+                Add Expense Line
+              </SubmitButton>
+            </Form>
+          </ModalCard>
+        </ModalOverlay>
+      ) : null}
+    </Page>
+  );
 }
 
-const Main = styled.div`
-    width: 95%;
-    display: flex;
-    justify-content: space-around;
-`
+const iPadLandscapeMedia = '@media (min-width: 835px) and (max-width: 1180px)';
+const iPadPortraitMedia = '@media (min-width: 768px) and (max-width: 834px) and (orientation: portrait)';
 
-const Container = styled.div`
-    max-width: 200px;
-    min-width: 150px;
-    padding: 0px;
+const Page = styled.section`
+  display: grid;
+  gap: 16px;
+`;
 
-    form {
-        margin-top: 20px;
-    }
-    @media print {
-        display: none;
-    }
-`
-const Select = styled.div`
-    display: flex;
-    flex-direction: column;
+const PageHeader = styled.header`
+  display: grid;
+  gap: 4px;
+  padding: 4px 4px 0;
+`;
 
-    select {
-        margin-top: 10px;
+const Eyebrow = styled.p`
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--accent);
+`;
+
+const Title = styled.h2`
+  font-size: clamp(2rem, 3.1vw, 3rem);
+  line-height: 1;
+`;
+
+const Description = styled.p`
+  max-width: 52rem;
+  color: var(--muted);
+  font-size: 0.98rem;
+`;
+
+const Layout = styled.div`
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;
+  align-items: start;
+
+  @media (min-width: 1024px) {
+    grid-template-columns: minmax(360px, 420px) minmax(0, 1fr);
+  }
+
+  @media (min-width: 1180px) {
+    grid-template-columns: minmax(390px, 460px) minmax(0, 1fr);
+  }
+
+  @media print {
+    display: block;
+  }
+`;
+
+const Sidebar = styled.div`
+  display: grid;
+  gap: 14px;
+  align-self: start;
+
+  ${iPadLandscapeMedia} {
+    grid-template-columns: minmax(250px, 0.85fr) minmax(320px, 1.15fr);
+    align-items: start;
+  }
+
+  ${iPadPortraitMedia} {
+    grid-template-columns: minmax(200px, 228px) minmax(0, 1fr);
+    align-items: start;
+  }
+
+  @media (min-width: 1024px) {
+    position: sticky;
+    top: 14px;
+    max-height: calc(100vh - 28px);
+    overflow: auto;
+    padding-right: 4px;
+  }
+
+  @media print {
+    display: none;
+  }
+`;
+
+const PreviewColumn = styled.div`
+  min-width: 0;
+`;
+
+const Card = styled.section`
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--paper);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px);
+
+  ${iPadPortraitMedia} {
+    padding: 14px;
+  }
+`;
+
+const CardHeader = styled.div`
+  display: grid;
+  gap: 4px;
+  margin-bottom: 12px;
+`;
+
+const CardTitle = styled.h3`
+  font-size: 1.4rem;
+
+  ${iPadPortraitMedia} {
+    font-size: 1.16rem;
+  }
+`;
+
+const CardText = styled.p`
+  color: var(--muted);
+
+  ${iPadPortraitMedia} {
+    font-size: 0.9rem;
+  }
+`;
+
+const Form = styled.form`
+  display: grid;
+  gap: 12px;
+
+  &#heading {
+    grid-template-columns: 1fr;
+    align-items: end;
+  }
+
+  &#expense {
+    grid-template-columns: 1fr;
+    align-items: end;
+  }
+
+  ${iPadLandscapeMedia} {
+    &#heading {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
-    button {
-        margin-top: 10px;
+
+    &#expense {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
-    button:disabled {
-        display: none;
+  }
+
+  ${iPadPortraitMedia} {
+    &#heading {
+      grid-template-columns: 1fr;
     }
-`
-const Check = styled.div`
-    display: flex;
-    flex-direction: column;
+
+    &#expense {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    &#expense > *:first-child {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    &#expense {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 680px) {
+    &#heading,
+    &#expense {
+      grid-template-columns: 1fr;
+    }
+  }
+`;
+
+const Field = styled.div`
+  display: grid;
+  gap: 6px;
+  grid-column: span ${(props) => props.$span || 1};
+
+  label {
+    color: var(--brand-strong);
+    font-weight: 700;
+    font-size: 0.92rem;
+  }
+
+  input,
+  select {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid rgba(52, 88, 66, 0.18);
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.86);
+    color: var(--ink);
+    transition: border-color 160ms ease, box-shadow 160ms ease;
+  }
+
+  input:focus,
+  select:focus {
+    outline: none;
+    border-color: rgba(52, 88, 66, 0.42);
+    box-shadow: 0 0 0 4px rgba(52, 88, 66, 0.08);
+  }
+
+  @media (max-width: 680px) {
+    grid-column: span 1;
+  }
+
+  ${iPadPortraitMedia} {
     label {
-        margin-top: 10px;
+      font-size: 0.84rem;
     }
-    ul {
-        margin: 0;
-        padding:0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        list-style-type: none;
-        li {
-            margin: 10px;
-            input {
-                margin-left: 10px;
-            }
-        }
-        
-    }
-    div {
-        display: flex;
-        align-items: center;
-        justify-content: center;
 
-        input {
-            margin-top: 10px;
-            margin-left: 10px;
-            
-        }
-        
+    input,
+    select {
+      padding: 10px 11px;
+      font-size: 0.92rem;
     }
-`
+  }
+`;
+
+const InlineFields = styled.div`
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-column: 1 / -1;
+
+  @media (max-width: 520px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const ChoiceGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
+  gap: 8px;
+
+  ${iPadPortraitMedia} {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+`;
+
+const ChoiceLabel = styled.label`
+  position: relative;
+  cursor: pointer;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  span {
+    display: block;
+    padding: 9px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(52, 88, 66, 0.16);
+    background: rgba(255, 255, 255, 0.75);
+    text-align: center;
+    font-weight: 700;
+    color: var(--muted);
+    transition: 160ms ease;
+  }
+
+  ${iPadPortraitMedia} {
+    span {
+      font-size: 0.84rem;
+    }
+  }
+
+  input:checked + span {
+    color: white;
+    border-color: transparent;
+    background: linear-gradient(135deg, var(--brand), var(--brand-strong));
+    box-shadow: 0 10px 20px rgba(52, 88, 66, 0.24);
+  }
+`;
+
+const StaticChoice = styled.div`
+  padding: 9px 12px;
+  border-radius: 999px;
+  background: rgba(52, 88, 66, 0.09);
+  color: var(--brand-strong);
+  font-weight: 700;
+  text-align: center;
+`;
+
+const SubmitButton = styled.button`
+  padding: 12px 16px;
+  border: none;
+  border-radius: 999px;
+  color: white;
+  background: linear-gradient(135deg, var(--accent), #db8c4d);
+  font-weight: 700;
+  box-shadow: 0 16px 28px rgba(199, 115, 47, 0.24);
+  grid-column: 1 / -1;
+
+  @media (min-width: 681px) {
+    justify-self: start;
+    min-width: 180px;
+  }
+
+  ${iPadPortraitMedia} {
+    width: 100%;
+    min-width: 0;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+`;
+
+const CompactRow = styled.div`
+  display: grid;
+  gap: 10px;
+`;
+
+const TriggerButton = styled.button`
+  padding: 12px 16px;
+  border: none;
+  border-radius: 999px;
+  color: white;
+  background: linear-gradient(135deg, var(--accent), #db8c4d);
+  font-weight: 700;
+  box-shadow: 0 16px 28px rgba(199, 115, 47, 0.24);
+  justify-self: start;
+`;
+
+const CompactHint = styled.p`
+  color: var(--muted);
+  font-size: 0.92rem;
+`;
+
+const ModalOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(28, 35, 29, 0.42);
+  backdrop-filter: blur(8px);
+
+  @media print {
+    display: none;
+  }
+`;
+
+const ModalCard = styled.section`
+  width: min(760px, 100%);
+  max-height: min(88vh, 920px);
+  overflow: auto;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 251, 245, 0.98);
+  box-shadow: 0 28px 60px rgba(28, 35, 29, 0.28);
+`;
+
+const ModalHeader = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+  }
+`;
+
+const ModalTitle = styled.h3`
+  font-size: 1.4rem;
+`;
+
+const ModalText = styled.p`
+  margin-top: 4px;
+  color: var(--muted);
+`;
+
+const CloseButton = styled.button`
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(52, 88, 66, 0.16);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--ink);
+  font-weight: 700;
+`;
 
 export default NewReport;

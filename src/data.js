@@ -14,6 +14,11 @@ firebase.initializeApp(firebaseConfig)
 
 export const db = firebase.firestore();
 export const auth = firebase.auth();
+export const googleProvider = new firebase.auth.GoogleAuthProvider();
+
+googleProvider.setCustomParameters({
+    prompt: "select_account"
+})
 
 export const getData = (coll, func) => {
     let arr = []

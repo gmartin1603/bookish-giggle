@@ -1,323 +1,687 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components'
+import styled from 'styled-components';
 import { useEditValue } from '../context/providers/EditProvider';
 import { getData } from '../data';
 import ReportSelect from './ReportSelect';
 import Text from './Text';
 
-
 function EditReport() {
+  const [state, dispatch] = useEditValue();
 
-    const [state, dispatch] = useEditValue()
+  const [hide, setHide] = useState(true);
+  const [optionList, setOptionList] = useState([]);
+  const [cat, setCat] = useState('');
+  const [itm, setItm] = useState('');
+  const [price, setPrice] = useState('');
+  const [chk, setChk] = useState('');
+  const [qty, setQty] = useState('');
+  const [disa, setDisa] = useState(true);
+  const [units, setUnits] = useState([]);
+  const [unit, setUnit] = useState('');
+  const [total, setTotal] = useState(0);
+  const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
 
-    const [hide, setHide] = useState(true)
-    const [optionList, setOptionList] = useState([])
-    const [cat, setCat] = useState('')
-    const [itm, setItm] = useState('')
-    const [price, setPrice] = useState(0)
-    const [chk, setChk] = useState('')
-    const [qty, setQty] = useState(0)
-    const [disa, setDisa] = useState(true)
-    const [units, setUnits] = useState()
-    const [unit, setUnit] = useState()
-    const [total, setTotal] = useState(0)
+  useEffect(() => {
+    getData('expenses-4.0', dispatch);
+  }, [dispatch]);
 
-    const handleChange = (e) => {
-        e.preventDefault()
-        setCat(e.target.value)
-        setItm('')
-        setUnit()
-        setUnits()
-  
-        state["expenses-4.0"].map((item) => {
-        if(item.id === e.target.value) {
-            setOptionList(item.options)
+  useEffect(() => {
+    const canAdd = Boolean(cat && itm && chk && Number(qty) > 0 && Number(price) > 0);
+    setDisa(!canAdd);
+  }, [cat, itm, chk, qty, price]);
 
-            if(item.units.length === 1) {
-                // auto selects unit if only one option exists
-                setUnit(item.units[0])
-                setChk(item.units[0])
-            } else if (item.units.length > 1){
-                setUnits(item.units)  
-            }
-        }})
+  const clearExpenseForm = () => {
+    const expenseForm = document.getElementById('edit-expense');
+
+    if (expenseForm) {
+      expenseForm.reset();
     }
 
-    useEffect(() => {
-        getData('expenses-4.0', dispatch)
-        // console.log("Data Retrived")
-      },[])
+    setOptionList([]);
+    setCat('');
+    setItm('');
+    setPrice('');
+    setQty('');
+    setChk('');
+    setUnit('');
+    setUnits([]);
+    setDisa(true);
+  };
 
-    const validate = () => {
-        if ((cat && itm && chk !== '') && (qty && price > 0)) {
-            // console.log("validated => true")
-            if (disa) {
-                setDisa(false)
-            }
-        } else {
-            if (!disa) {
-                setDisa(true)
-            }
-        }
+  const handleChange = (event) => {
+    const value = event.target.value;
+    const selectedExpense = (state['expenses-4.0'] || []).find((item) => item.id === value);
+
+    setCat(value);
+    setItm('');
+    setChk('');
+    setUnit('');
+    setUnits([]);
+    setOptionList(selectedExpense?.options || []);
+
+    if (selectedExpense?.units?.length === 1) {
+      setUnit(selectedExpense.units[0]);
+      setChk(selectedExpense.units[0]);
+      return;
     }
 
-    const clear = (ele) => {
-        document.getElementById(ele).reset()
-        setCat('')
-        setItm('')
-        setPrice(0)
-        setQty(0)
-        setDisa(true)
+    if (selectedExpense?.units?.length > 1) {
+      setUnits(selectedExpense.units);
+    }
+  };
+
+  const addExpense = (event) => {
+    event.preventDefault();
+
+    const numericPrice = Number(price);
+    const numericQty = Number(qty);
+    const obj = {
+      id: Date.now(),
+      name: itm,
+      price: numericPrice,
+      qty: numericQty,
+      unit: chk,
+      arr: cat,
+    };
+
+    setTotal((currentTotal) => currentTotal + numericQty * numericPrice);
+
+    dispatch({
+      type: 'ADD-OBJ',
+      name: cat,
+      load: obj,
+    });
+
+    clearExpenseForm();
+    setIsExpenseModalOpen(false);
+  };
+
+  const removeItem = (arr, attr, value) => {
+    const source = state[arr] || [];
+    let nextTotal = total;
+    const nextArray = [];
+
+    for (let index = source.length - 1; index >= 0; index -= 1) {
+      const item = source[index];
+
+      if (item && Object.prototype.hasOwnProperty.call(item, attr) && item[attr] === value) {
+        nextTotal -= Number(item.qty) * Number(item.price);
+      } else {
+        nextArray.splice(0, 0, item);
+      }
     }
 
-    const addExpense = (e) => {
-        e.preventDefault()
-        let obj = {
-            id: Date.now(),
-            name: itm,
-            price,
-            qty,
-            unit: chk,
-            arr: cat,
-        }
-        let t = total + (qty * price)
-        setTotal(t)
-        
-        dispatch({
-            type: "ADD-OBJ",
-            name: cat,
-            load: obj,
-            
-        })
-        clear('expense')
-        }
+    setTotal(nextTotal);
+    dispatch({
+      type: 'ADD-ARR',
+      name: arr,
+      load: nextArray,
+    });
+  };
 
-        const removeItem = (arr, attr, value) => {
-            console.log(arr)
-            let a = state[arr]
-            let i = a.length;
-            let array = []
-            while(i--){
-                if(a[i] && a[i].hasOwnProperty(attr) && a[i][attr] === value){
-                    //  remove quantity * price from total
-                    let q = a[i]["qty"]
-                    let p = a[i]["price"]
-                    let t = total - (q * p)
-                    setTotal(t)
-                }else{
-                // new array with target obj removed
-                array.splice(0, 0, a[i])
-                console.log(array)
-                }      
-            }
-            // update context store
-            dispatch({
-                type: 'ADD-ARR',
-                name: arr,
-                load: array,
-            })
-        }
-        
-        useEffect(() => {
+  return (
+    <Page>
+      <PageHeader>
+        <Eyebrow>Review saved work</Eyebrow>
+        <Title>Reopen and update an existing report.</Title>
+        <Description>
+          Load a saved report, add new expense lines, and print or save the refreshed version.
+        </Description>
+      </PageHeader>
 
-            validate()
-            
-            // let t = 0
-            // state.seedList.length > 0 &&
-            // state.seedList.map((obj) => (
-            //     t = t + (obj.price * obj.qty)
-            // ))
-            // state.fertList.length > 0 &&
-            // state.fertList.map((obj) => (
-            //     t = t + (obj.price * obj.qty)
-            // ))
-            // state.chemList.length > 0 &&
-            // state.chemList.map((obj) => (
-            //     t = t + (obj.price * obj.qty)
-            // ))
-            // state.fuelList.length > 0 &&
-            // state.fuelList.map((obj) => (
-            //     t = t + (obj.price * obj.qty)
-            // ))
-            // state.truckingList.length > 0 &&
-            // state.truckingList.map((obj) => (
-            //     t = t + (obj.price * obj.qty)
-            // ))
-            // // state.insList.length > 0 &&
-            // // state.insList.map((obj) => (
-            // //     t = t + (obj.price * obj.qty)
-            // // ))
-            // // state.misc.length > 0 &&
-            // // state.misc.map((obj) => (
-            // //     t = t + (obj.price * obj.qty)
-            // // ))
-            // setTotal(t)
-            
-        })
+      <Layout>
+        <Sidebar>
+          <ReportSelect setTotal={setTotal} setHide={setHide} />
 
-    return (
-        <Main>
-              <ReportSelect
-                setTotal={setTotal}
-                setHide={setHide}
-              />
-        <Content>
-        <Container>
-            <form id="expense" action="add seed" hidden={hide} >
-            <Select>
-            <label htmlFor="Expense">Add Expense</label>
-            <select className="form-select" name="expense"  onChange={(e) => handleChange(e)}>
-            <option value="" defaultValue hidden>Choose here</option>
+          <Card $hidden={hide}>
+            <CardHeader>
+              <CardTitle>Add More Expense Lines</CardTitle>
+              <CardText>
+                Continue building the selected report using the same categories and unit rules.
+              </CardText>
+            </CardHeader>
 
-            {
-               state["expenses-4.0"] &&
-               state["expenses-4.0"].map((obj) => (
-                <option key={obj.label} value={obj.id}> {obj.label} </option>
-                ))
-            }
-            </select>
-            {
-                optionList.length > 0 &&
-                 cat !== '' ?  
-                
-                // <label for="expense">Add Expense</label>
-                <select className="form-select" name={cat} onChange={(e) => setItm(e.target.value)}>
-                        <option value="" defaultValue hidden>Choose here</option>
-                    {        
-                        
-                        optionList.map((o) => (
-                            <option key={o} value={o} >{o}</option>
-                        ))
-                        
-                    }
-                </select>
-                  :
-                  ''
-            }
+            <CompactRow>
+              <TriggerButton type="button" onClick={() => setIsExpenseModalOpen(true)} disabled={hide}>
+                Add to Report
+              </TriggerButton>
+              <CompactHint>
+                Open the expense form in a modal so the sidebar stays compact on tablet.
+              </CompactHint>
+            </CompactRow>
+          </Card>
 
-            {
-                units && cat?
-                <Check>    
-                    <label htmlFor="qty">Unit of Measure</label>
-                    <ul>
-                    {
-                        units.map((uni) => (
-                            <li>
-                                <label for={uni}> {uni} </label>
-                                <input name={uni} type="checkbox" value={uni} onChange={(e) => setChk(e.target.value)} />
-                            </li>
-                        ))
-                    }
-                    </ul>
-                </Check>
-                :
-                ''
-            }
-            {
-                unit && cat ?
-                <Check>
-                    <label htmlFor="qty">Unit of Measure</label>
-                    <div>
-                        <label for={unit}>{unit}</label>
-                        <input name={unit} type="checkbox" checked={true} value={unit}/>
-                    </div>
-                </Check>
-                    :
-                    ''
-            }
+          {hide ? (
+            <PlaceholderCard>
+              <CardTitle>Select a report first</CardTitle>
+              <CardText>
+                Once you load a saved report, the edit controls will appear here so you can keep working.
+              </CardText>
+            </PlaceholderCard>
+          ) : null}
+        </Sidebar>
 
-            <label htmlFor="qty">Quantity</label>
-            <input className="form-control" placeholder="QTY" name="qty" type="number" onChange={(e) => setQty(e.target.value)}/>
-            <label htmlFor="price">Price Per Unit</label>
-            <input className="form-control" placeholder="Price" name="price" type="number" onChange={(e) => setPrice(e.target.value)}/>
-            <button class="btn btn-outline-primary" disabled={disa} type="submit" onClick={(e) => addExpense(e)}>ADD</button>
-            </Select>
-            </form>
-        </Container>
-        <Text
-            head={{ll: state.landLord,
-                yr: state.year,
-                cp: state.crop,}}
+        <PreviewColumn>
+          <Text
+            head={{
+              ll: state.landLord,
+              yr: state.year,
+              cp: state.crop,
+            }}
             body={{
-            seed: state.seedList,
-            chemicals: state.chemList,
-            fertilizer: state.fertList,
-            fuel: state.fuelList,
-            misc: state.misc,
-            trucking: state.truckingList,
-            insurance: state.insList,}}
+              seed: state.seedList,
+              chemicals: state.chemList,
+              fertilizer: state.fertList,
+              fuel: state.fuelList,
+              misc: state.misc,
+              trucking: state.truckingList,
+              insurance: state.insList,
+            }}
             total={total}
-            removeItem= {removeItem}
-        />
-        </Content>
-        </Main>
-    );
+            removeItem={removeItem}
+          />
+        </PreviewColumn>
+      </Layout>
+
+      {isExpenseModalOpen && !hide ? (
+        <ModalOverlay role="presentation" onClick={() => setIsExpenseModalOpen(false)}>
+          <ModalCard role="dialog" aria-modal="true" aria-labelledby="edit-expense-modal" onClick={(event) => event.stopPropagation()}>
+            <ModalHeader>
+              <div>
+                <ModalTitle id="edit-expense-modal">Add More Expense Lines</ModalTitle>
+                <ModalText>Choose a category, item, unit, quantity, and price for the selected report.</ModalText>
+              </div>
+              <CloseButton type="button" onClick={() => setIsExpenseModalOpen(false)}>
+                Close
+              </CloseButton>
+            </ModalHeader>
+
+            <Form id="edit-expense" onSubmit={addExpense}>
+              <Field $span={1}>
+                <label htmlFor="edit-expense-category">Expense Category</label>
+                <select id="edit-expense-category" name="expense" onChange={handleChange} defaultValue="">
+                  <option value="" disabled>
+                    Choose here
+                  </option>
+                  {(state['expenses-4.0'] || []).map((obj) => (
+                    <option key={obj.id} value={obj.id}>
+                      {obj.label}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+
+              {optionList.length > 0 && cat ? (
+                <Field $span={1}>
+                  <label htmlFor="edit-expense-item">Expense Item</label>
+                  <select
+                    id="edit-expense-item"
+                    name={cat}
+                    onChange={(event) => setItm(event.target.value)}
+                    defaultValue=""
+                  >
+                    <option value="" disabled>
+                      Choose here
+                    </option>
+                    {optionList.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+              ) : null}
+
+              {units.length > 0 && cat ? (
+                <Field $span={2}>
+                  <label>Unit of Measure</label>
+                  <ChoiceGrid>
+                    {units.map((nextUnit) => {
+                      const inputId = `edit-unit-${nextUnit}`;
+
+                      return (
+                        <ChoiceLabel key={nextUnit} htmlFor={inputId}>
+                          <input
+                            id={inputId}
+                            type="radio"
+                            name="edit-expense-unit"
+                            value={nextUnit}
+                            checked={chk === nextUnit}
+                            onChange={(event) => setChk(event.target.value)}
+                          />
+                          <span>{nextUnit}</span>
+                        </ChoiceLabel>
+                      );
+                    })}
+                  </ChoiceGrid>
+                </Field>
+              ) : null}
+
+              {unit && cat ? (
+                <Field $span={2}>
+                  <label>Unit of Measure</label>
+                  <StaticChoice>{unit}</StaticChoice>
+                </Field>
+              ) : null}
+
+              <InlineFields>
+                <Field>
+                  <label htmlFor="edit-qty">Quantity</label>
+                  <input
+                    id="edit-qty"
+                    placeholder="QTY"
+                    name="qty"
+                    type="number"
+                    min="0"
+                    step="any"
+                    value={qty}
+                    onChange={(event) => setQty(event.target.value)}
+                  />
+                </Field>
+
+                <Field>
+                  <label htmlFor="edit-price">Price Per Unit</label>
+                  <input
+                    id="edit-price"
+                    placeholder="Price"
+                    name="price"
+                    type="number"
+                    min="0"
+                    step="any"
+                    value={price}
+                    onChange={(event) => setPrice(event.target.value)}
+                  />
+                </Field>
+              </InlineFields>
+
+              <SubmitButton type="submit" disabled={disa || hide}>
+                Add to Report
+              </SubmitButton>
+            </Form>
+          </ModalCard>
+        </ModalOverlay>
+      ) : null}
+    </Page>
+  );
 }
 
-const Main = styled.div`
+const iPadLandscapeMedia = '@media (min-width: 835px) and (max-width: 1180px)';
+const iPadPortraitMedia = '@media (min-width: 768px) and (max-width: 834px) and (orientation: portrait)';
+
+const Page = styled.section`
+  display: grid;
+  gap: 16px;
+`;
+
+const PageHeader = styled.header`
+  display: grid;
+  gap: 4px;
+  padding: 4px 4px 0;
+`;
+
+const Eyebrow = styled.p`
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--accent);
+`;
+
+const Title = styled.h2`
+  font-size: clamp(2rem, 3.1vw, 3rem);
+  line-height: 1;
+`;
+
+const Description = styled.p`
+  max-width: 52rem;
+  color: var(--muted);
+  font-size: 0.98rem;
+`;
+
+const Layout = styled.div`
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;
+  align-items: start;
+
+  @media (min-width: 1024px) {
+    grid-template-columns: minmax(360px, 420px) minmax(0, 1fr);
+  }
+
+  @media (min-width: 1180px) {
+    grid-template-columns: minmax(390px, 460px) minmax(0, 1fr);
+  }
+
+  @media print {
+    display: block;
+  }
+`;
+
+const Sidebar = styled.div`
+  display: grid;
+  gap: 14px;
+  align-self: start;
+
+  ${iPadLandscapeMedia} {
+    grid-template-columns: minmax(240px, 0.8fr) minmax(300px, 1.2fr);
+    align-items: start;
+  }
+
+  ${iPadPortraitMedia} {
+    grid-template-columns: minmax(205px, 235px) minmax(0, 1fr);
+    align-items: start;
+  }
+
+  @media (min-width: 1024px) {
+    position: sticky;
+    top: 14px;
+    max-height: calc(100vh - 28px);
+    overflow: auto;
+    padding-right: 4px;
+  }
+
+  @media print {
+    display: none;
+  }
+`;
+
+const PreviewColumn = styled.div`
+  min-width: 0;
+`;
+
+const Card = styled.section`
+  display: ${(props) => (props.$hidden ? 'none' : 'block')};
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--paper);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px);
+
+  ${iPadPortraitMedia} {
+    padding: 14px;
+  }
+`;
+
+const PlaceholderCard = styled.section`
+  padding: 18px;
+  border: 1px dashed rgba(52, 88, 66, 0.22);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.42);
+
+  ${iPadLandscapeMedia} {
+    grid-column: 1 / -1;
+  }
+
+  ${iPadPortraitMedia} {
+    grid-column: 1 / -1;
+    padding: 14px;
+  }
+`;
+
+const CardHeader = styled.div`
+  display: grid;
+  gap: 4px;
+  margin-bottom: 12px;
+`;
+
+const CardTitle = styled.h3`
+  font-size: 1.4rem;
+
+  ${iPadPortraitMedia} {
+    font-size: 1.16rem;
+  }
+`;
+
+const CardText = styled.p`
+  color: var(--muted);
+
+  ${iPadPortraitMedia} {
+    font-size: 0.9rem;
+  }
+`;
+
+const Form = styled.form`
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr;
+  align-items: end;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  ${iPadPortraitMedia} {
+    > *:first-child {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 680px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const Field = styled.div`
+  display: grid;
+  gap: 6px;
+  grid-column: span ${(props) => props.$span || 1};
+
+  label {
+    color: var(--brand-strong);
+    font-weight: 700;
+    font-size: 0.92rem;
+  }
+
+  input,
+  select {
     width: 100%;
-    display: flex;
-    flex-direction: column;
-`
-const Content = styled.div`
-    
-    display: flex;
-    justify-content: space-around;
-`
-const Container = styled.div`
-    display: flex;
+    padding: 11px 12px;
+    border: 1px solid rgba(52, 88, 66, 0.18);
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.86);
+    color: var(--ink);
+    transition: border-color 160ms ease, box-shadow 160ms ease;
+  }
 
-    @media print {
-        display: none;
-    }
+  input:focus,
+  select:focus {
+    outline: none;
+    border-color: rgba(52, 88, 66, 0.42);
+    box-shadow: 0 0 0 4px rgba(52, 88, 66, 0.08);
+  }
 
-`
-const Select = styled.div`
-    width: 200px;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
+  @media (max-width: 680px) {
+    grid-column: span 1;
+  }
 
-    button {
-        margin-top: 10px;
-    }
-    button:disabled {
-        display: none;
-    }
-`
-const Check = styled.div`
-    display: flex;
-    flex-direction: column;
+  ${iPadPortraitMedia} {
     label {
-        margin-top: 10px;
+      font-size: 0.84rem;
     }
-    ul {
-        margin: 0;
-        padding:0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        list-style-type: none;
-        li {
-            margin: 10px;
-            input {
-                margin-left: 10px;
-            }
-        }
-        
-    }
-    div {
-        display: flex;
-        align-items: center;
-        justify-content: center;
 
-        input {
-            margin-top: 10px;
-            margin-left: 10px;
-            
-        }
-        
+    input,
+    select {
+      padding: 10px 11px;
+      font-size: 0.92rem;
     }
-`
+  }
+`;
+
+const InlineFields = styled.div`
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-column: 1 / -1;
+
+  @media (max-width: 520px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const ChoiceGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
+  gap: 8px;
+
+  ${iPadPortraitMedia} {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+`;
+
+const ChoiceLabel = styled.label`
+  position: relative;
+  cursor: pointer;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  span {
+    display: block;
+    padding: 9px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(52, 88, 66, 0.16);
+    background: rgba(255, 255, 255, 0.75);
+    text-align: center;
+    font-weight: 700;
+    color: var(--muted);
+    transition: 160ms ease;
+  }
+
+  ${iPadPortraitMedia} {
+    span {
+      font-size: 0.84rem;
+    }
+  }
+
+  input:checked + span {
+    color: white;
+    border-color: transparent;
+    background: linear-gradient(135deg, var(--brand), var(--brand-strong));
+    box-shadow: 0 10px 20px rgba(52, 88, 66, 0.24);
+  }
+`;
+
+const StaticChoice = styled.div`
+  padding: 9px 12px;
+  border-radius: 999px;
+  background: rgba(52, 88, 66, 0.09);
+  color: var(--brand-strong);
+  font-weight: 700;
+  text-align: center;
+`;
+
+const SubmitButton = styled.button`
+  padding: 12px 16px;
+  border: none;
+  border-radius: 999px;
+  color: white;
+  background: linear-gradient(135deg, var(--accent), #db8c4d);
+  font-weight: 700;
+  box-shadow: 0 16px 28px rgba(199, 115, 47, 0.24);
+  grid-column: 1 / -1;
+
+  @media (min-width: 681px) {
+    justify-self: start;
+    min-width: 170px;
+  }
+
+  ${iPadPortraitMedia} {
+    width: 100%;
+    min-width: 0;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+`;
+
+const CompactRow = styled.div`
+  display: grid;
+  gap: 10px;
+`;
+
+const TriggerButton = styled.button`
+  padding: 12px 16px;
+  border: none;
+  border-radius: 999px;
+  color: white;
+  background: linear-gradient(135deg, var(--accent), #db8c4d);
+  font-weight: 700;
+  box-shadow: 0 16px 28px rgba(199, 115, 47, 0.24);
+  justify-self: start;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+`;
+
+const CompactHint = styled.p`
+  color: var(--muted);
+  font-size: 0.92rem;
+`;
+
+const ModalOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(28, 35, 29, 0.42);
+  backdrop-filter: blur(8px);
+
+  @media print {
+    display: none;
+  }
+`;
+
+const ModalCard = styled.section`
+  width: min(760px, 100%);
+  max-height: min(88vh, 920px);
+  overflow: auto;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 251, 245, 0.98);
+  box-shadow: 0 28px 60px rgba(28, 35, 29, 0.28);
+`;
+
+const ModalHeader = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+  }
+`;
+
+const ModalTitle = styled.h3`
+  font-size: 1.4rem;
+`;
+
+const ModalText = styled.p`
+  margin-top: 4px;
+  color: var(--muted);
+`;
+
+const CloseButton = styled.button`
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(52, 88, 66, 0.16);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--ink);
+  font-weight: 700;
+`;
 
 export default EditReport;
