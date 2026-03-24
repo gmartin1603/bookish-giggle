@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { cancelNextFrame, requestNextFrame } from "../../lib/utils/browser";
+import { createId } from "../../lib/utils/ids";
 import type { ExpenseCategory, ExpenseLineItem } from "../../types/domain";
 
 interface ExpenseComposerProps {
@@ -67,11 +69,11 @@ export function ExpenseComposer({
       return;
     }
 
-    const frame = window.requestAnimationFrame(() => {
+    const frame = requestNextFrame(() => {
       target.focus();
     });
 
-    return () => window.cancelAnimationFrame(frame);
+    return () => cancelNextFrame(frame);
   }, [autoFocusField, categoryId]);
 
   const selectedCategory = useMemo(
@@ -107,7 +109,7 @@ export function ExpenseComposer({
     }
 
     onAdd(selectedCategory.id, {
-      id: crypto.randomUUID(),
+      id: createId(),
       name: form.itemName,
       price: Number(form.price),
       qty: Number(form.qty),

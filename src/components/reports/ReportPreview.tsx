@@ -10,20 +10,42 @@ interface ReportPreviewProps {
 }
 
 export function ReportPreview({ categories, draft, total, onAddRequest, onRemove }: ReportPreviewProps) {
+  const populatedCategoryCount = categories.filter(
+    (category) => (draft.itemsByCategory[category.id] ?? []).length > 0
+  ).length;
+
   return (
     <div className="report-preview">
       <div className="report-preview-header">
-        <p className="eyebrow">Live preview</p>
-        <h2>
-          {draft.landLord || "Landlord"} / {draft.crop || "Crop"} / {draft.year || "Year"}
-        </h2>
+        <h2>Expense report</h2>
+        <div className="preview-report-meta">
+          <p>
+            <span>Landlord</span>
+            <strong>{draft.landLord || "-"}</strong>
+          </p>
+          <p>
+            <span>Crop</span>
+            <strong>{draft.crop || "-"}</strong>
+          </p>
+          <p>
+            <span>Year</span>
+            <strong>{draft.year || "-"}</strong>
+          </p>
+          <p>
+            <span>Sections</span>
+            <strong>{populatedCategoryCount}</strong>
+          </p>
+        </div>
       </div>
 
       {categories.map((category) => {
         const items = draft.itemsByCategory[category.id] ?? [];
 
         return (
-          <section key={category.id} className="preview-group">
+          <section
+            key={category.id}
+            className={`preview-group${items.length ? "" : " preview-group-empty"}`}
+          >
             <div className="preview-group-header">
               <div className="preview-group-summary">
                 <h3>{category.label}</h3>
@@ -34,7 +56,6 @@ export function ReportPreview({ categories, draft, total, onAddRequest, onRemove
                 </p>
               </div>
               <div className="preview-group-actions">
-                <strong>{formatCurrency(calculateItemsTotal(items))}</strong>
                 <button
                   className="icon-button preview-add-trigger"
                   type="button"
@@ -49,14 +70,21 @@ export function ReportPreview({ categories, draft, total, onAddRequest, onRemove
 
             {items.length ? (
               <div className="preview-rows">
+                <div className="preview-row preview-row-head" aria-hidden="true">
+                  <span>Item</span>
+                  <span>Quantity</span>
+                  <span>Rate</span>
+                  <span>Amount</span>
+                </div>
                 {items.map((item) => (
                   <article key={item.id} className="preview-row">
-                    <div>
+                    <div className="preview-row-main">
                       <strong>{item.name}</strong>
-                      <p>
-                        {item.qty} {item.unit} @ {formatCurrency(item.price)}
-                      </p>
                     </div>
+                    <p className="preview-row-detail">
+                      {item.qty} {item.unit}
+                    </p>
+                    <p className="preview-row-detail">{formatCurrency(item.price)}</p>
                     <div className="preview-row-actions">
                       <strong>{formatCurrency(item.qty * item.price)}</strong>
                       <button

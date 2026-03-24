@@ -1,7 +1,14 @@
 import { defineConfig } from "vitest/config";
+import legacy from "@vitejs/plugin-legacy";
 import react from "@vitejs/plugin-react";
 export default defineConfig({
-    plugins: [react()],
+    plugins: [
+        react(),
+        legacy({
+            targets: ["defaults", "iOS >= 12", "Safari >= 12"],
+            modernPolyfills: true
+        })
+    ],
     build: {
         outDir: "build"
     },

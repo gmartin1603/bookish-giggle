@@ -14,6 +14,7 @@ import {
   mapReportToDraft,
   saveReport
 } from "../features/reports/reportService";
+import { printPage, requestNextFrame } from "../lib/utils/browser";
 import { calculateReportTotal } from "../lib/utils/calculations";
 import type {
   ExpenseCategory,
@@ -136,7 +137,7 @@ export function ReportEditorPage({ mode }: ReportEditorPageProps) {
   function handleCloseAddItem() {
     setActiveCategoryId(null);
 
-    window.requestAnimationFrame(() => {
+    requestNextFrame(() => {
       lastAddTriggerRef.current?.focus();
     });
   }
@@ -207,7 +208,7 @@ export function ReportEditorPage({ mode }: ReportEditorPageProps) {
           <button className="button button-secondary" type="button" onClick={handleReset}>
             Clear draft
           </button>
-          <button className="button button-ghost" type="button" onClick={() => window.print()}>
+          <button className="button button-ghost" type="button" onClick={printPage}>
             Print
           </button>
         </div>

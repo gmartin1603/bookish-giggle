@@ -6,6 +6,7 @@ import {
   useState,
   type ReactNode
 } from "react";
+import { getStoredItem, setStoredItem } from "../../lib/utils/browser";
 
 export type Theme = "light" | "dark";
 
@@ -29,7 +30,7 @@ function getPreferredTheme(): Theme {
     return "light";
   }
 
-  const storedTheme = window.localStorage.getItem(STORAGE_KEY);
+  const storedTheme = getStoredItem(STORAGE_KEY);
 
   if (storedTheme === "light" || storedTheme === "dark") {
     return storedTheme;
@@ -48,7 +49,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     document.documentElement.style.colorScheme = theme;
-    window.localStorage.setItem(STORAGE_KEY, theme);
+    setStoredItem(STORAGE_KEY, theme);
 
     const themeColorMeta = document.querySelector('meta[name="theme-color"]');
 

@@ -1,9 +1,11 @@
 import {
   collection,
+  doc,
   getDocs,
   onSnapshot,
   orderBy,
   query,
+  setDoc,
   type QuerySnapshot,
   type DocumentData
 } from "firebase/firestore";
@@ -45,4 +47,19 @@ export function subscribeToLabelDefinitions(
   return onSnapshot(query(labelsCollection, orderBy("label")), (snapshot) => {
     callback(mapLabels(snapshot));
   });
+}
+
+export async function saveLabelDefinition(label: LabelDefinition) {
+  await setDoc(doc(db, "labels-4.0", label.id), label, { merge: true });
+}
+
+export async function saveExpenseCategory(category: ExpenseCategory) {
+  await setDoc(
+    doc(db, "expenses-4.0", category.id),
+    {
+      ...category,
+      units: category.units ?? []
+    },
+    { merge: true }
+  );
 }

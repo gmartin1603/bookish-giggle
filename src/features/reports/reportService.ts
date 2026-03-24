@@ -11,6 +11,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../../lib/firebase/config";
 import { calculateReportTotal } from "../../lib/utils/calculations";
+import { createId } from "../../lib/utils/ids";
 import type {
   ExpenseCategory,
   ExpenseLineItem,
@@ -44,7 +45,7 @@ export function buildLegacyReportDocId(draft: Pick<ReportDraft, "landLord" | "cr
 
 export function createEmptyDraft(categories: ExpenseCategory[]): ReportDraft {
   return {
-    id: crypto.randomUUID(),
+    id: createId(),
     landLord: "",
     crop: "",
     year: "",
