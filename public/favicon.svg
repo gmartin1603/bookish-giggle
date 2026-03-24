@@ -1,0 +1,12 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Farm Report favicon</title>
+  <rect x="4" y="4" width="56" height="56" rx="16" fill="#153220"/>
+  <circle cx="45" cy="18" r="6" fill="#F6C65B"/>
+  <path d="M10 43.5C14.764 38.689 20.361 36.284 26.793 36.284C33.83 36.284 39.271 33.725 46.586 33.725C51.697 33.725 55.835 35.884 59 40.203V50C59 54.971 54.971 59 50 59H14C9.029 59 5 54.971 5 50V45.832L10 43.5Z" fill="#D4A24B"/>
+  <path d="M22 14H35.5L42 20.5V37C42 40.314 39.314 43 36 43H22C18.686 43 16 40.314 16 37V20C16 16.686 18.686 14 22 14Z" fill="#FFF8E8"/>
+  <path d="M35.5 14V19C35.5 21.485 37.515 23.5 40 23.5H42" stroke="#D8C8A6" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M22 24H33" stroke="#2E6848" stroke-width="3" stroke-linecap="round"/>
+  <path d="M22 29.5H34" stroke="#70836E" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M22 35H30" stroke="#70836E" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M23 38L25.7 40.7L31 35.4" stroke="#2E6848" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

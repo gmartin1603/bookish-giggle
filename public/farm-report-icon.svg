@@ -1,0 +1,43 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Farm Report app icon</title>
+  <defs>
+    <linearGradient id="farm-report-bg" x1="96" y1="72" x2="432" y2="456" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#3F7A54"/>
+      <stop offset="1" stop-color="#153220"/>
+    </linearGradient>
+    <linearGradient id="farm-report-field" x1="120" y1="286" x2="392" y2="436" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#E7C66A"/>
+      <stop offset="1" stop-color="#C6943F"/>
+    </linearGradient>
+    <linearGradient id="farm-report-paper" x1="178" y1="136" x2="338" y2="326" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFDF5"/>
+      <stop offset="1" stop-color="#F2EAD8"/>
+    </linearGradient>
+    <filter id="farm-report-shadow" x="67" y="56" width="378" height="400" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dy="22"/>
+      <feGaussianBlur stdDeviation="20"/>
+      <feComposite in2="hardAlpha" operator="out"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.0823529 0 0 0 0 0.196078 0 0 0 0 0.12549 0 0 0 0.22 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1_1"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1_1" result="shape"/>
+    </filter>
+  </defs>
+  <rect x="48" y="48" width="416" height="416" rx="104" fill="url(#farm-report-bg)"/>
+  <path d="M88 334C123.644 301.922 162.154 286.69 203.53 288.304C249.891 290.113 285.773 271.477 332.281 272.894C371.894 274.1 408.467 294.469 424 323.5V408C424 425.673 409.673 440 392 440H120C102.327 440 88 425.673 88 408V334Z" fill="url(#farm-report-field)"/>
+  <path d="M110 392C139.86 358.229 173.955 341.344 212.286 341.344C251.523 341.344 283.374 323.906 327.106 323.906C365.194 323.906 395.491 342.824 418 380.66" stroke="#F6E6B3" stroke-width="12" stroke-linecap="round" opacity="0.9"/>
+  <path d="M108 432C139.436 395.174 174.954 376.762 214.554 376.762C257.66 376.762 293.75 357.268 340.341 357.268C370.302 357.268 395.855 367.438 417 387.778" stroke="#F2D888" stroke-width="10" stroke-linecap="round" opacity="0.85"/>
+  <circle cx="357" cy="152" r="34" fill="#F6C65B"/>
+  <g filter="url(#farm-report-shadow)">
+    <path d="M188 112H297.118L356 170.882V304C356 326.091 338.091 344 316 344H188C165.909 344 148 326.091 148 304V152C148 129.909 165.909 112 188 112Z" fill="url(#farm-report-paper)"/>
+    <path d="M297 112V154C297 171.673 311.327 186 329 186H356" fill="#E0D2B0"/>
+    <path d="M297 112V154C297 171.673 311.327 186 329 186H356" stroke="#D3C19B" stroke-width="10" stroke-linejoin="round"/>
+    <path d="M196 194H300" stroke="#2E6848" stroke-width="14" stroke-linecap="round"/>
+    <path d="M196 232H304" stroke="#7A8B7B" stroke-width="12" stroke-linecap="round" opacity="0.9"/>
+    <path d="M196 269H274" stroke="#7A8B7B" stroke-width="12" stroke-linecap="round" opacity="0.78"/>
+    <path d="M204 300L225.5 321L268 278.5" stroke="#2E6848" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <path d="M360.145 250.536C344.415 253.812 332.263 261.386 323.691 273.258C317.538 281.779 313.687 291.634 312.144 302.821C323.354 301.462 333.49 298.164 342.551 292.926C355.187 285.62 363.542 275.526 367.614 262.636C369.021 258.18 369.864 253.972 370.145 250.012C366.674 249.919 363.34 250.094 360.145 250.536Z" fill="#8CD18A"/>
+  <path d="M320.293 300.158C332.371 293.177 341.924 283.831 348.95 272.121" stroke="#EAF7E7" stroke-width="8" stroke-linecap="round"/>
+</svg>
