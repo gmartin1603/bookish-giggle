@@ -1,4 +1,4 @@
-import { calculateItemsTotal, formatCurrency } from "../../lib/utils/calculations";
+import { formatCurrency } from "../../lib/utils/calculations";
 import type { ExpenseCategory, ReportDraft } from "../../types/domain";
 
 interface ReportPreviewProps {
